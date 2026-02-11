@@ -43,10 +43,10 @@
                         <i class="fas fa-user-graduate"></i>
                     </div>
                 </div>
-                <div class="stat-number">142</div>
+                <div class="stat-number"> {{$stageEncours}}</div>
                 <div class="stat-trend trend-up">
                     <i class="fas fa-arrow-up"></i>
-                    <span>12% ce mois</span>
+                    
                 </div>
             </div>
             
@@ -57,24 +57,24 @@
                         <i class="fas fa-check-circle"></i>
                     </div>
                 </div>
-                <div class="stat-number">89</div>
+                <div class="stat-number"> {{$stageValider}} </div>
                 <div class="stat-trend trend-up">
                     <i class="fas fa-arrow-up"></i>
-                    <span>8% ce mois</span>
+                    
                 </div>
             </div>
             
             <div class="stat-card orange">
                 <div class="stat-header">
-                    <div class="stat-title">En Attente</div>
+                    <div class="stat-title">Annuler</div>
                     <div class="stat-icon">
                         <i class="fas fa-clock"></i>
                     </div>
                 </div>
-                <div class="stat-number">24</div>
+                <div class="stat-number">{{$stageAnnule}}</div>
                 <div class="stat-trend trend-down">
                     <i class="fas fa-arrow-down"></i>
-                    <span>3% ce mois</span>
+                    
                 </div>
             </div>
             

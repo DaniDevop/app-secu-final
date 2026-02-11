@@ -38,8 +38,12 @@ class UsersController extends Controller
 
 
       public function index(){
+       
+      $stageValider=AffectionAgent::where('status','Terminé')->count();
+     $stageEncours=AffectionAgent::where('status','En-cours')->count();
+     $stageAnnule=AffectionAgent::where('status','Annulé')->count();
 
-      return view('users.index');
+      return view('users.index',compact('stageAnnule','stageEncours','stageValider'));
       }
 
 
