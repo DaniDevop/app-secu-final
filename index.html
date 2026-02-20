@@ -102,16 +102,15 @@ button:hover {
             <p>République Gabonaise</p>
         </div>
 
-        <form   method="POST" action="{{route('login.user.admin')}}">
-            @csrf
+        <form>
             <div class="input-group">
                 <label>Matricule</label>
-                <input type="text" placeholder="Entrez votre matricule" name="name">
+                <input type="text" placeholder="Entrez votre matricule">
             </div>
 
             <div class="input-group">
                 <label>Mot de passe</label>
-                <input type="password" placeholder="********" name="password">
+                <input type="password" placeholder="********">
             </div>
 
             <button type="submit">Se connecter</button>

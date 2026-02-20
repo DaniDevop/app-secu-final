@@ -49,6 +49,7 @@ Route::post('/administration/service/ServiceAgent/editService',[EcoleController:
     Route::post('/users/admin/affection/agent/ecole',[AffectationController::class,'addAffectation'])->name('users.affectation.addAffectation');  
     Route::get('/users/admin/affection/agent{edit}',[AffectationController::class,'editAffectation'])->name('users.editAffectationt.agent');  
     
+    Route::post('/users/admin/affection/agent/ecole/editData',[AffectationController::class,'EditAffectationAgent'])->name('users.EditAffectationAgent.editData');  
 
 
 });

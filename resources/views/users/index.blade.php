@@ -1,90 +1,82 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tableau de Bord - Gestion des Stages ASP</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-     @include('style.style')
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard - Sécurité Pénitentiaire</title>
+   @include('style.admin')
+
 </head>
+
 <body>
-    <!-- Menu mobile -->
-    <div class="mobile-toggle" id="mobileToggle">
-        <i class="fas fa-bars"></i>
+
+   @include('style.sidebarAdmin')
+
+
+<div class="main">
+
+    <div class="header">
+        <h1>Tableau de Bord</h1>
+        <div class="user-info">Admin Général</div>
     </div>
 
-    <!-- Sidebar -->
-     @include('style.sidebar')
-
-    <!-- Contenu principal -->
-    <div class="main-content" id="mainContent">
-        <!-- Header -->
-        <header class="main-header">
-            <div class="header-left">
-                <h1>Tableau de Bord</h1>
-                <p>Agent connecté  : {{ Auth::user()->grade ?? 'Admin Direction' }}  {{ Auth::user()->name ?? 'Admin Direction' }}</p>
-            </div>
-            <div class="header-right">
-                <div class="search-box">
-                <h4>Agent connecté  : {{ Auth::user()->grade ?? 'Admin Direction' }}  {{ Auth::user()->name ?? 'Admin Direction' }}</h4>
-                </div>
-                <div class="notification-bell">
-                    
-                </div>
-            </div>
-        </header>
-
-        <!-- Cartes de statistiques -->
-        <div class="stats-cards">
-            <div class="stat-card">
-                <div class="stat-header">
-                    <div class="stat-title">Stagiaires Actifs</div>
-                    <div class="stat-icon">
-                        <i class="fas fa-user-graduate"></i>
-                    </div>
-                </div>
-                <div class="stat-number"> {{$stageEncours}}</div>
-                <div class="stat-trend trend-up">
-                    <i class="fas fa-arrow-up"></i>
-                    
-                </div>
-            </div>
-            
-            <div class="stat-card green">
-                <div class="stat-header">
-                    <div class="stat-title">Stages Validés</div>
-                    <div class="stat-icon">
-                        <i class="fas fa-check-circle"></i>
-                    </div>
-                </div>
-                <div class="stat-number"> {{$stageValider}} </div>
-                <div class="stat-trend trend-up">
-                    <i class="fas fa-arrow-up"></i>
-                    
-                </div>
-            </div>
-            
-            <div class="stat-card orange">
-                <div class="stat-header">
-                    <div class="stat-title">Annuler</div>
-                    <div class="stat-icon">
-                        <i class="fas fa-clock"></i>
-                    </div>
-                </div>
-                <div class="stat-number">{{$stageAnnule}}</div>
-                <div class="stat-trend trend-down">
-                    <i class="fas fa-arrow-down"></i>
-                    
-                </div>
-            </div>
-            
-            
+    <div class="cards">
+        <div class="card">
+            <h3>Agents enregistrés</h3>
+            <p>248</p>
         </div>
 
-        <!-- Contenu principal en grille -->
-       
+        <div class="card">
+            <h3>Stages en cours</h3>
+            <p>32</p>
+        </div>
+
+        <div class="card">
+            <h3>Écoles partenaires</h3>
+            <p>6</p>
+        </div>
+
+        <div class="card">
+            <h3>Stages terminés</h3>
+            <p>115</p>
+        </div>
     </div>
 
+    <div class="section">
+        <h2>Dernières affectations</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Matricule</th>
+                    <th>Nom</th>
+                    <th>École</th>
+                    <th>Statut</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>SPG001</td>
+                    <td>NDONG Jean</td>
+                    <td>École Nationale</td>
+                    <td><span class="status en-cours">En cours</span></td>
+                </tr>
+                <tr>
+                    <td>SPG014</td>
+                    <td>OYONO Marc</td>
+                    <td>Centre Spécialisé</td>
+                    <td><span class="status attente">En attente</span></td>
+                </tr>
+                <tr>
+                    <td>SPG022</td>
+                    <td>MBADINGA Paul</td>
+                    <td>École Militaire</td>
+                    <td><span class="status termine">Terminé</span></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+</div>
 
 </body>
 </html>
