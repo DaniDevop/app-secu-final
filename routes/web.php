@@ -26,7 +26,7 @@ Route::get('/administration/ecole/',[EcoleController::class,'ecole'])->name('adm
 Route::post('/administration/ecole/addEcole',[EcoleController::class,'addEcole'])->name('admin.ecole.addEcole');
 Route::get('/administration/ecole/edit/{id}',[EcoleController::class,'edit'])->name('admin.ecole.edit');
 Route::post('/administration/ecole/EditEcole',[EcoleController::class,'SaveEditEcole'])->name('admin.ecole.SaveEditEcole');
-
+Route::get('/administration/ecole/agentByEcole/{id}',[EcoleController::class,'AgentByEcole'])->name('admin.ecole.agentByEcole');
 // Services
 
 

@@ -535,7 +535,7 @@ tbody tr:hover{
             <li><a href="{{route('admin.ecole.index')}}"><i class="fas fa-school"></i> Écoles</a></li>
             <li><a href="{{route('admin.service.index')}}"><i class="fas fa-briefcase"></i> Services</a></li>
             <li><a href="{{route('admin.listes.Admin')}}"><i class="fas fa-user-tie"></i> Administrations</a></li>
-            <li><a href="{{route('users.affectation.agent')}}"><i class="fas fa-exchange-alt"></i> Stages / Affectations</a></li>
+            <li><a href="{{route('users.affectation.agent')}}"><i class="fas fa-exchange-alt"></i><span> Stages / Affectations</span></a></li>
             <li><a href="#"><i class="fas fa-chart-bar"></i> Rapports</a></li>
         </ul>
     </div>

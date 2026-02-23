@@ -13,7 +13,7 @@ class AgentStagiareController extends Controller
 
       public function index(){
 
-$stagiares = AgentStagiare::paginate(5);
+$stagiares = AgentStagiare::get();
     $servicesAll=ServiceAgent::all();
 
     return view('users.agent.index',compact('stagiares','servicesAll'));

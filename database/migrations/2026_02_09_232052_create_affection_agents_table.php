@@ -18,6 +18,7 @@ return new class extends Migration
             $table->foreignIdFor(EcoleStage::class);
             $table->string('date_debut');
             $table->string('date_fin')->nullable();
+            $table->string('type_formations')->nullable();
             $table->timestamps();
         });
     }

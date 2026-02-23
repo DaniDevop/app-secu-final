@@ -10,565 +10,8 @@
 <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/dataTables.bootstrap5.min.css">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
 
-<style>
-/* ================== THEME ================== */
-:root {
-    --primary: #0B3D2E;
-    --primary-light: #1F6F5C;
-    --gold: #D4AF37;
-    --bg: #F1F4F8;
-    --card: #ffffff;
-    --text: #1f2937;
-    --gray: #6b7280;
-    --sidebar-width: 260px;
-    --sidebar-width-mobile: 70px;
-}
+  @include('users.services.style')
 
-/* ================== GLOBAL ================== */
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
-
-body {
-    background: var(--bg);
-    font-family: 'Segoe UI', sans-serif;
-    margin: 0;
-    padding-left: var(--sidebar-width);
-    transition: padding-left 0.3s ease;
-    min-height: 100vh;
-    overflow-x: hidden;
-}
-
-/* ================== SIDEBAR ================== */
-.sidebar {
-    width: var(--sidebar-width);
-    background: linear-gradient(180deg, #081C15, #1B4332);
-    color: white;
-    padding: 30px 20px;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    box-shadow: 5px 0 30px rgba(0,0,0,0.2);
-    position: fixed;
-    top: 0;
-    left: 0;
-    height: 100%;
-    z-index: 1000;
-    transition: all 0.3s ease;
-    overflow-y: auto;
-}
-
-.logo { 
-    text-align: center; 
-    margin-bottom: 40px; 
-}
-
-.logo h2 { 
-    color: var(--gold); 
-    font-size: 18px; 
-    letter-spacing: 2px;
-    word-break: break-word;
-}
-
-.menu { 
-    list-style: none; 
-    padding: 0; 
-}
-
-.menu li { 
-    margin: 8px 0; 
-}
-
-.menu a {
-    text-decoration: none;
-    color: white;
-    padding: 12px 15px;
-    border-radius: 10px;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    transition: all 0.3s;
-    font-size: 15px;
-    white-space: nowrap;
-}
-
-.menu a i {
-    font-size: 18px;
-    width: 24px;
-    text-align: center;
-}
-
-.menu a:hover, 
-.menu a.active { 
-    background: #2D6A4F; 
-    transform: translateX(5px); 
-}
-
-.sidebar-footer { 
-    font-size: 12px; 
-    text-align: center; 
-    opacity: .7;
-    margin-top: 20px;
-}
-
-/* Menu toggle button for mobile */
-.menu-toggle {
-    display: none;
-    position: fixed;
-    top: 15px;
-    left: 15px;
-    z-index: 1001;
-    background: var(--primary);
-    color: white;
-    border: none;
-    border-radius: 50%;
-    width: 45px;
-    height: 45px;
-    font-size: 20px;
-    cursor: pointer;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-    align-items: center;
-    justify-content: center;
-}
-
-/* ================== MAIN CONTENT ================== */
-.main-content { 
-    padding: 25px 30px; 
-    transition: all 0.3s ease;
-    width: 100%;
-    min-height: 100vh;
-}
-
-/* ================== HEADER ================== */
-.main-header {
-    background: linear-gradient(135deg, var(--primary), var(--primary-light));
-    color: white;
-    padding: 25px 30px;
-    border-radius: 20px;
-    margin-bottom: 25px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 20px;
-}
-
-.main-header h1 { 
-    font-size: clamp(20px, 4vw, 24px); 
-    font-weight: 600; 
-    display: flex; 
-    align-items: center; 
-    gap: 10px; 
-    margin: 0;
-}
-
-.main-header p { 
-    margin: 5px 0 0 0; 
-    opacity: .8; 
-    font-size: clamp(13px, 3vw, 14px);
-}
-
-.header-text {
-    flex: 1;
-    min-width: 250px;
-}
-
-/* ================== SEARCH BOX ================== */
-.search-box { 
-    position: relative; 
-    min-width: 200px;
-}
-
-.search-box i {
-    position: absolute; 
-    top: 50%; 
-    left: 15px; 
-    transform: translateY(-50%);
-    color: var(--gray);
-    font-size: 14px;
-    z-index: 1;
-}
-
-.search-box input {
-    padding: 12px 15px 12px 40px;
-    border-radius: 30px;
-    border: 1px solid rgba(255,255,255,0.2);
-    width: 100%;
-    min-width: 250px;
-    background: rgba(255,255,255,0.15);
-    color: white;
-    transition: all 0.3s;
-}
-
-.search-box input::placeholder {
-    color: rgba(255,255,255,0.7);
-}
-
-.search-box input:focus {
-    background: rgba(255,255,255,0.25);
-    outline: none;
-    border-color: white;
-}
-
-/* ================== BUTTON ================== */
-.btn-add {
-    background: var(--primary);
-    color: white;
-    border-radius: 30px;
-    padding: 12px 25px;
-    font-weight: 600;
-    transition: all 0.3s;
-    border: none;
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 15px;
-    white-space: nowrap;
-    cursor: pointer;
-}
-
-.btn-add:hover { 
-    background: var(--primary-light); 
-    transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(11, 61, 46, 0.3);
-}
-
-/* ================== TABLE ================== */
-.table-container {
-    background: var(--card);
-    border-radius: 20px;
-    padding: 20px;
-    overflow-x: auto;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.05);
-    margin-bottom: 20px;
-    -webkit-overflow-scrolling: touch;
-}
-
-.table {
-    width: 100%;
-    margin-bottom: 0;
-    min-width: 600px;
-}
-
-.table th, 
-.table td { 
-    vertical-align: middle !important;
-    padding: 15px 12px;
-}
-
-.table th {
-    background: #f8f9fa;
-    font-weight: 600;
-    color: var(--primary);
-    white-space: nowrap;
-}
-
-.table td {
-    word-break: break-word;
-}
-
-/* ================== PAGINATION ================== */
-.pagination {
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 5px;
-}
-
-.page-link {
-    border-radius: 8px !important;
-    margin: 0 2px;
-    color: var(--primary);
-}
-
-.page-item.active .page-link {
-    background: var(--primary);
-    border-color: var(--primary);
-    color: white;
-}
-
-/* ================== EMPTY STATE ================== */
-.empty-state {
-    text-align: center;
-    padding: 50px 20px;
-    background: white;
-    border-radius: 20px;
-    margin-top: 20px;
-    display: none;
-}
-
-.empty-icon {
-    font-size: 70px;
-    color: var(--gray);
-    opacity: 0.3;
-    margin-bottom: 20px;
-}
-
-.empty-state h3 {
-    color: var(--text);
-    margin-bottom: 10px;
-}
-
-.empty-state p {
-    color: var(--gray);
-    margin-bottom: 20px;
-}
-
-/* ================== MODAL ================== */
-.asp-modal .modal-content {
-    border-radius: 20px;
-    border: none;
-    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-}
-
-.asp-modal .modal-header {
-    background: linear-gradient(135deg, var(--primary), var(--primary-light));
-    color: white;
-    border-top-left-radius: 20px;
-    border-top-right-radius: 20px;
-    padding: 20px 25px;
-}
-
-.asp-modal .modal-body {
-    padding: 25px;
-}
-
-.asp-modal .form-control { 
-    border-radius: 12px; 
-    padding: 12px 15px; 
-    border: 2px solid #e9ecef;
-    transition: all 0.3s;
-}
-
-.asp-modal .form-control:focus {
-    border-color: var(--primary);
-    box-shadow: 0 0 0 3px rgba(11, 61, 46, 0.1);
-    outline: none;
-}
-
-.asp-modal .modal-footer { 
-    border-top: none; 
-    padding: 20px 25px;
-    background: #f8f9fa;
-    border-bottom-left-radius: 20px;
-    border-bottom-right-radius: 20px;
-}
-
-/* ================== MEDIA QUERIES ================== */
-@media screen and (max-width: 992px) {
-    body {
-        padding-left: var(--sidebar-width-mobile);
-    }
-    
-    .sidebar {
-        width: var(--sidebar-width-mobile);
-        padding: 20px 10px;
-    }
-    
-    .logo h2 {
-        font-size: 12px;
-        white-space: normal;
-        word-break: break-word;
-    }
-    
-    .menu a span {
-        display: none;
-    }
-    
-    .menu a {
-        justify-content: center;
-        padding: 12px;
-    }
-    
-    .menu a i {
-        font-size: 20px;
-        margin: 0;
-        width: auto;
-    }
-    
-    .sidebar-footer {
-        font-size: 10px;
-        writing-mode: vertical-rl;
-        transform: rotate(180deg);
-        white-space: nowrap;
-        height: auto;
-        align-self: center;
-    }
-    
-    .main-header {
-        padding: 20px;
-    }
-    
-    .search-box {
-        width: 100%;
-    }
-    
-    .search-box input {
-        width: 100%;
-    }
-    
-    .main-content {
-        padding: 20px 15px;
-    }
-}
-
-@media screen and (max-width: 768px) {
-    .menu-toggle {
-        display: flex;
-    }
-    
-    body {
-        padding-left: 0;
-    }
-    
-    .sidebar {
-        transform: translateX(-100%);
-        width: 260px;
-    }
-    
-    .sidebar.active {
-        transform: translateX(0);
-    }
-    
-    .sidebar .menu a span {
-        display: inline;
-    }
-    
-    .sidebar .menu a {
-        justify-content: flex-start;
-    }
-    
-    .sidebar .logo h2 {
-        font-size: 16px;
-    }
-    
-    .sidebar-footer {
-        writing-mode: horizontal-tb;
-        transform: none;
-    }
-    
-    .main-header {
-        margin-top: 50px;
-        flex-direction: column;
-        align-items: stretch;
-    }
-    
-    .btn-add {
-        width: 100%;
-        justify-content: center;
-    }
-    
-    .d-flex.justify-content-end {
-        justify-content: stretch !important;
-    }
-    
-    .table th, 
-    .table td {
-        padding: 12px 8px;
-        font-size: 14px;
-    }
-}
-
-@media screen and (max-width: 480px) {
-    .main-header {
-        padding: 15px;
-    }
-    
-    .main-content {
-        padding: 15px 10px;
-    }
-    
-    .table-container {
-        padding: 15px 10px;
-        border-radius: 15px;
-    }
-    
-    .table th, 
-    .table td {
-        font-size: 13px;
-        padding: 10px 5px;
-    }
-    
-    .btn-add {
-        padding: 10px 15px;
-        font-size: 14px;
-    }
-    
-    .empty-icon {
-        font-size: 50px;
-    }
-    
-    .empty-state h3 {
-        font-size: 18px;
-    }
-    
-    .asp-modal .modal-dialog {
-        margin: 10px;
-    }
-    
-    .asp-modal .modal-body {
-        padding: 20px 15px;
-    }
-}
-
-@media screen and (min-width: 1400px) {
-    .main-content {
-        max-width: 1600px;
-        margin: 0 auto;
-    }
-}
-
-@media (hover: none) and (pointer: coarse) {
-    .menu a,
-    .btn-add,
-    .page-link,
-    .btn-sm {
-        padding: 15px 20px;
-        font-size: 16px;
-    }
-    
-    .table td .btn-sm {
-        padding: 8px 12px;
-        margin: 2px;
-    }
-}
-
-/* ================== ANIMATIONS ================== */
-@keyframes slideIn {
-    from {
-        opacity: 0;
-        transform: translateY(20px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-.main-content {
-    animation: slideIn 0.5s ease;
-}
-
-/* ================== SCROLLBAR ================== */
-::-webkit-scrollbar {
-    width: 8px;
-    height: 8px;
-}
-
-::-webkit-scrollbar-track {
-    background: #f1f1f1;
-}
-
-::-webkit-scrollbar-thumb {
-    background: var(--primary);
-    border-radius: 10px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-    background: var(--primary-light);
-}
-</style>
 </head>
 
 <body>
@@ -588,7 +31,7 @@ body {
             <li><a href="{{route('admin.ecole.index')}}" class="active"><i class="fas fa-university"></i><span> Écoles</span></a></li>
             <li><a href="{{route('admin.service.index')}}"><i class="fas fa-briefcase"></i><span> Services</span></a></li>
             <li><a href="{{route('admin.listes.Admin')}}"><i class="fas fa-users-cog"></i><span> Administrations</span></a></li>
-            <li><a href="{{route('users.affectation.agent')}}"><i class="fas fa-chalkboard-teacher"></i><span> Stages / Affectations</span></a></li>
+            <li><a href="{{route('users.affectation.agent')}}"><i class="fas fa-exchange-alt"></i><span> Stages / Affectations</span></a></li>
         </ul>
     </div>
     <div class="sidebar-footer">Application interne sécurisée</div>
@@ -613,35 +56,58 @@ body {
         </button>
     </div>
 
-    <div class="table-container">
-        <table id="schoolsTable" class="table table-hover align-middle">
-            <thead>
-                <tr>
-                    <th><i class="fas fa-university me-2"></i>Nom de l'École</th>
-                    <th><i class="fas fa-map-marker-alt me-2"></i>Adresse</th>
-                    <th class="text-center">Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach($ecoles as $ecole)
-                <tr>
-                    <td data-label="Nom de l'École">{{$ecole->nom_ecole}}</td>
-                    <td data-label="Adresse">{{$ecole->adresse}}</td>
-                    <td class="text-center" data-label="Actions">
-                        <a class="btn btn-sm btn-outline-primary" title="Modifier" href="{{route('admin.ecole.edit', $ecole->id)}}">
-                            <i class="fas fa-pen-to-square"></i>
+ <div class="table-container">
+    <table id="schoolsTable" class="table table-hover align-middle">
+        <thead>
+            <tr>
+                <th><i class="fas fa-school me-2"></i>Nom de l'École</th>
+                <th><i class="fas fa-globe me-2"></i>Pays</th>
+                <th><i class="fas fa-user-graduate me-2"></i>Stagiaires</th>
+                <th class="text-center"><i class="fas fa-cogs me-2"></i>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach($ecoles as $ecole)
+            <tr>
+                <td data-label="Nom de l'École">
+                    <i class="fas fa-school text-primary me-2"></i>
+                    {{$ecole->nom_ecole}}
+                </td>
+                <td data-label="Pays">
+                    <i class="fas fa-map-marker-alt text-danger me-2"></i>
+                    {{$ecole->adresse}}
+                </td>
+                <td data-label="Stagiaires">
+                    <a class="btn btn-sm btn-outline-info" title="Voir les stagiaires" href="{{route('admin.ecole.agentByEcole', $ecole->id)}}">
+                        <i class="fas fa-users me-1"></i> 
+                        <span>Stagiaires</span>
+                    </a>
+                </td>
+                <td class="text-center" data-label="Actions">
+                    <div class="btn-group" role="group">
+                        <a class="btn btn-sm btn-outline-primary" title="Modifier l'école" href="{{route('admin.ecole.edit', $ecole->id)}}">
+                            <i class="fas fa-edit"></i>
                         </a>
-                        <button class="btn btn-sm btn-outline-danger" onclick="confirmDelete({{$ecole->id}}, '{{$ecole->nom_ecole}}')">
-                            <i class="fas fa-trash"></i>
+                        <button class="btn btn-sm btn-outline-danger" title="Supprimer l'école" onclick="confirmDelete({{$ecole->id}}, '{{$ecole->nom_ecole}}')">
+                            <i class="fas fa-trash-alt"></i>
                         </button>
-                    </td>
-                </tr>
-                @endforeach
-            </tbody>
-        </table>
+                    </div>
+                </td>
+            </tr>
+            @endforeach
+        </tbody>
+    </table>
 
-        <div class="d-flex justify-content-center mt-3">{{ $ecoles->links() }}</div>
+    <!-- Zone de pagination personnalisée -->
+    <div class="d-flex justify-content-between align-items-center mt-4 flex-wrap">
+        <div class="dataTables_info" id="schoolsTable_info" role="status" aria-live="polite">
+            Affichage de 1 à 10 sur X entrées
+        </div>
+        <div class="dataTables_paginate paging_simple_numbers" id="schoolsTable_paginate">
+            <!-- La pagination sera générée automatiquement par DataTables -->
+        </div>
     </div>
+</div>
 
     <div class="empty-state" id="emptyState">
         <div class="empty-icon"><i class="fas fa-university"></i></div>
@@ -669,13 +135,12 @@ body {
                             </label>
                             <input type="text" id="schoolName" name="nom_ecole" class="form-control" placeholder="Ex: Université de Paris" required>
                         </div>
-                        <div class="form-group mb-3">
-                            <label class="form-label fw-bold" for="schoolAddress">
-                                <i class="fas fa-map-marker-alt me-1 text-primary"></i> Adresse *
+                         <div class="form-group mb-3">
+                            <label class="form-label fw-bold" for="schoolName">
+                                 Pays *
                             </label>
-                            <textarea id="schoolAddress" name="adresse" class="form-control" placeholder="Ex: 12 Rue de l'Université, 75005 Paris" rows="3" required></textarea>
+                            <input type="text" id="schoolName" name="pays" class="form-control" placeholder="Ex: Gabon" required>
                         </div>
-                        <input type="hidden" id="schoolId" name="id">
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>

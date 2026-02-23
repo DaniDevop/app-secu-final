@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\AffectionAgent;
 use App\Models\EcoleStage;
 use App\Models\ServiceAgent;
 use Illuminate\Http\Request;
@@ -12,7 +13,7 @@ class EcoleController extends Controller
      public function ecole(){
 
 
-       $ecoles=EcoleStage::paginate(5);
+       $ecoles=EcoleStage::get();
 
       return view('users.ecole.ecole',compact('ecoles'));
      }
@@ -60,15 +61,15 @@ public function SaveEditEcole(Request $request)
 
         $data=$request->validate([
           'nom_ecole'=>'required',
-          'adresse'=>'required'
+          'pays'=>'required'
         ],[
             'nom_ecole.required'=>'Le nom de l ecole est requis !',
-            'adresse.required'=>'Veuillez entrer une adresse'
+            'pays.required'=>'Veuillez entrer un pays'
         ]);
 
          $ecoleStage=new EcoleStage();
          $ecoleStage->nom_ecole=$data['nom_ecole'];
-        $ecoleStage->adresse=$data['adresse'];
+        $ecoleStage->adresse=$data['pays'];
          $ecoleStage->save();
          return back()->with('success','Ecole ajouté avec success !');
 
@@ -102,7 +103,7 @@ public function SaveEditEcole(Request $request)
       }
 
 
-
+      
 
         public function editServices($id){
        $service=ServiceAgent::find($id);
@@ -136,6 +137,20 @@ public function SaveEditEcole(Request $request)
               return back()->with('success','Service ajouté avec success !');
 
 
+      }
+
+
+      public function AgentByEcole($id){
+
+        $ecole=EcoleStage::find($id);
+        if(!$ecole){
+            return back()->with('error','Ecole introuvable !');
+        }
+
+$ecoles = AffectionAgent::where('ecole_stage_id', $id)
+            ->latest() // équivalent à orderBy('created_at','desc')
+            ->paginate(5);        //dd($ecoles);
+        return view('users.ecole.stagiare_ecole',compact('ecoles'));
       }
 
 

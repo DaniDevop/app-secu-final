@@ -669,7 +669,7 @@ tr:hover .avatar-circle {
             <li><a href="{{route('admin.ecole.index')}}"><i class="fas fa-university"></i><span> Écoles</span></a></li>
             <li><a href="{{route('admin.service.index')}}"><i class="fas fa-briefcase"></i><span> Services</span></a></li>
             <li><a href="{{route('admin.listes.Admin')}}"><i class="fas fa-users-cog"></i><span> Administrations</span></a></li>
-            <li><a href="{{route('users.affectation.agent')}}" class="active"><i class="fas fa-chalkboard-teacher"></i><span> Stages / Affectations</span></a></li>
+            <li><a href="{{route('users.affectation.agent')}}"><i class="fas fa-exchange-alt"></i><span> Stages / Affectations</span></a></li>
         </ul>
     </div>
     <div class="sidebar-footer">Application interne sécurisée</div>
@@ -703,6 +703,7 @@ tr:hover .avatar-circle {
                 <th><i class="fas fa-user me-1"></i>Agent / Stagiaire</th>
                 <th><i class="fas fa-briefcase me-1"></i>Service & Grade</th>
                 <th><i class="fas fa-university me-1"></i>Établissement</th>
+                <th><i class="fas fa-tag me-1"></i>Type de Formation</th>
                 <th><i class="fas fa-calendar me-1"></i>Période de Stage</th>
             </tr>
         </thead>
@@ -724,7 +725,9 @@ tr:hover .avatar-circle {
                     <span class="badge bg-light text-dark border mb-1">{{ $affect->agent?->grade }}</span>
                     <br><small class="text-muted"><i class="fas fa-building me-1"></i>{{ $affect->agent?->services?->nom_services }}</small>
                 </td>
-                <td class="text-primary fw-bold"><i class="fas fa-school me-1"></i>{{ $affect->ecoles?->nom_ecole }}</td>
+                    <td class="text-primary fw-bold"><i class="fas fa-school me-1"></i>{{ $affect->ecoles?->nom_ecole }}</td>
+                    <td class="text-primary fw-bold"><i class="fas fa-tag me-1"></i>{{ $affect->type_formations }}</td>
+    
                 <td>
                     <small>
                         <span class="text-success">Début:</span> {{ \Carbon\Carbon::parse($affect->date_debut)->format('d/m/Y') }}<br>
@@ -752,6 +755,12 @@ tr:hover .avatar-circle {
                     <div class="row g-3">
                         <div class="col-md-6">
                             <label class="form-label fw-bold">
+                                <i class="fas fa-calendar-plus me-1 text-primary"></i> Type de Formation
+                            </label>
+                            <input type="text" name="type_formations" value="{{ $affect->type_formations }}" class="form-control" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">
                                 <i class="fas fa-calendar-plus me-1 text-primary"></i> Date de Début
                             </label>
                             <input type="date" name="date_debut" value="{{ $affect->date_debut }}" class="form-control" required>
@@ -771,7 +780,7 @@ tr:hover .avatar-circle {
                                     {{ $affect->agent?->name }} {{ $affect->agent?->prenom }} ({{ $affect->agent?->matricule }})
                                 </option>
                                 @foreach($agentAll as $agent)
-                                <option value="{{ $agent->id }}">
+                                <option value="{{ $agent->id }}" >
                                     {{ $agent->name }} {{ $agent->prenom }} ({{ $agent->matricule }})
                                 </option>
                                 @endforeach
@@ -797,14 +806,7 @@ tr:hover .avatar-circle {
                         <input type="hidden" name="affectation_id" value="{{ $affect->id }}">
                     </div>
                     
-                    <!-- Current values summary -->
-                    <div class="alert alert-light border small p-3 mt-4">
-                        <i class="fas fa-info-circle me-2 text-primary"></i>
-                        <span class="text-muted">
-                            Modification de l'affectation #{{ $affect->id }} pour 
-                            <strong>{{ $affect->agent?->name }} {{ $affect->agent?->prenom }}</strong>
-                        </span>
-                    </div>
+                   
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary px-4" data-bs-dismiss="modal">

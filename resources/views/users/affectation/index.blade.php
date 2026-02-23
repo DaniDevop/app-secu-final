@@ -5,12 +5,19 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5, user-scalable=yes">
 <title>Gestion des Affectations - ASP Stages</title>
 
-<!-- CSS externes -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
-<link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/dataTables.bootstrap5.min.css">
-<link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.4.2/css/buttons.bootstrap5.min.css">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+<!-- Bootstrap -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<!-- DataTables -->
+<link href="https://cdn.datatables.net/1.13.7/css/dataTables.bootstrap5.min.css" rel="stylesheet">
+<link href="https://cdn.datatables.net/buttons/2.4.2/css/buttons.bootstrap5.min.css" rel="stylesheet">
+<link href="https://cdn.datatables.net/responsive/2.5.0/css/responsive.bootstrap5.min.css" rel="stylesheet">
+
+<!-- FontAwesome -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+
+<!-- SweetAlert2 -->
+<link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
 
 <style>
 /* ================== THEME ================== */
@@ -241,8 +248,25 @@ body {
 }
 
 /* Export button customization */
-.btn-export-excel {
+.dt-buttons .btn-excel {
     background: #28a745 !important;
+    color: white !important;
+    border-radius: 30px !important;
+    padding: 12px 25px !important;
+    font-weight: 600 !important;
+    border: none !important;
+    transition: all 0.3s !important;
+    margin-right: 10px !important;
+}
+
+.dt-buttons .btn-excel:hover {
+    background: #218838 !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 5px 15px rgba(40, 167, 69, 0.3) !important;
+}
+
+.dt-buttons .btn-print {
+    background: #6c757d !important;
     color: white !important;
     border-radius: 30px !important;
     padding: 12px 25px !important;
@@ -251,32 +275,26 @@ body {
     transition: all 0.3s !important;
 }
 
-.btn-export-excel:hover {
-    background: #218838 !important;
+.dt-buttons .btn-print:hover {
+    background: #5a6268 !important;
     transform: translateY(-2px) !important;
-    box-shadow: 0 5px 15px rgba(40, 167, 69, 0.3) !important;
+    box-shadow: 0 5px 15px rgba(108, 117, 125, 0.3) !important;
 }
 
 /* ================== TABLE ================== */
 .table-container {
-    background: var(--card);
-    border-radius: 20px;
+    background: white;
+    border-radius: 15px;
     padding: 20px;
-    overflow-x: auto;
     box-shadow: 0 5px 15px rgba(0,0,0,0.05);
     margin-bottom: 20px;
-    -webkit-overflow-scrolling: touch;
+    width: 100%;
+    overflow: hidden;
 }
 
 .table {
-    width: 100%;
+    width: 100% !important;
     margin-bottom: 0;
-    min-width: 1000px; /* Table large nécessite scroll */
-}
-
-.table th, .table td { 
-    vertical-align: middle !important;
-    padding: 15px 12px;
 }
 
 .table th {
@@ -284,11 +302,15 @@ body {
     font-weight: 600;
     color: var(--primary);
     white-space: nowrap;
+    padding: 15px 12px;
+    font-size: 13px;
 }
 
 .table td {
+    vertical-align: middle;
+    padding: 12px;
+    font-size: 13px;
     word-break: break-word;
-    font-size: 14px;
 }
 
 /* Avatar circle */
@@ -302,6 +324,7 @@ body {
     align-items: center;
     justify-content: center;
     transition: all 0.3s;
+    flex-shrink: 0;
 }
 
 tr:hover .avatar-circle {
@@ -355,24 +378,291 @@ tr:hover .avatar-circle {
     font-size: 14px;
 }
 
-/* ================== PAGINATION ================== */
-.pagination {
-    flex-wrap: wrap;
-    justify-content: center;
+/* ================== DATATABLES CUSTOM ================== */
+.dataTables_wrapper {
+    width: 100%;
+    overflow: hidden;
+}
+
+.dataTables_length {
+    margin-bottom: 15px;
+}
+
+.dataTables_length label {
+    font-weight: 500;
+    color: var(--text);
+}
+
+.dataTables_length select {
+    border-radius: 8px;
+    border: 2px solid #e9ecef;
+    padding: 5px 10px;
+    margin: 0 5px;
+}
+
+.dataTables_filter {
+    margin-bottom: 15px;
+}
+
+.dataTables_filter label {
+    font-weight: 500;
+    color: var(--text);
+}
+
+.dataTables_filter input {
+    border-radius: 30px;
+    border: 2px solid #e9ecef;
+    padding: 8px 15px;
+    margin-left: 10px;
+    width: 250px;
+}
+
+.dataTables_filter input:focus {
+    border-color: var(--gold);
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.2);
+}
+
+.dataTables_info {
+    padding: 10px 0;
+    font-size: 14px;
+    color: var(--gray);
+}
+
+.dataTables_paginate {
+    padding: 10px 0;
+    display: flex;
     gap: 5px;
-    margin-top: 20px !important;
+    flex-wrap: wrap;
+    justify-content: flex-end;
 }
 
-.page-link {
-    border-radius: 8px !important;
-    margin: 0 2px;
+.paginate_button {
+    display: inline-block;
+    padding: 8px 14px;
+    border-radius: 8px;
+    background: white;
+    border: 2px solid #e9ecef;
     color: var(--primary);
+    cursor: pointer;
+    transition: all 0.3s;
+    font-size: 14px;
+    font-weight: 500;
 }
 
-.page-item.active .page-link {
+.paginate_button:hover:not(.disabled) {
     background: var(--primary);
-    border-color: var(--primary);
     color: white;
+    border-color: var(--primary);
+}
+
+.paginate_button.current {
+    background: var(--primary);
+    color: white;
+    border-color: var(--primary);
+}
+
+.paginate_button.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    background: #f8f9fa;
+}
+
+/* Responsive table */
+@media screen and (max-width: 1200px) {
+    .table {
+        font-size: 12px;
+    }
+    
+    .table th,
+    .table td {
+        padding: 10px 8px;
+    }
+}
+
+@media screen and (max-width: 992px) {
+    body {
+        padding-left: var(--sidebar-width-mobile);
+    }
+    
+    .sidebar {
+        width: var(--sidebar-width-mobile);
+        padding: 20px 10px;
+    }
+    
+    .logo h2 {
+        font-size: 12px;
+        white-space: normal;
+        word-break: break-word;
+    }
+    
+    .menu a span {
+        display: none;
+    }
+    
+    .menu a {
+        justify-content: center;
+        padding: 12px;
+    }
+    
+    .menu a i {
+        font-size: 20px;
+        margin: 0;
+        width: auto;
+    }
+    
+    .sidebar-footer {
+        font-size: 10px;
+        writing-mode: vertical-rl;
+        transform: rotate(180deg);
+        white-space: nowrap;
+        height: auto;
+        align-self: center;
+    }
+    
+    .main-content {
+        padding: 20px;
+    }
+    
+    .dataTables_filter input {
+        width: 180px;
+    }
+}
+
+@media screen and (max-width: 768px) {
+    .menu-toggle {
+        display: flex;
+    }
+    
+    body {
+        padding-left: 0;
+    }
+    
+    .sidebar {
+        transform: translateX(-100%);
+        width: 260px;
+        padding: 30px 20px;
+    }
+    
+    .sidebar.active {
+        transform: translateX(0);
+    }
+    
+    .sidebar .menu a span {
+        display: inline;
+    }
+    
+    .sidebar .menu a {
+        justify-content: flex-start;
+    }
+    
+    .sidebar .logo h2 {
+        font-size: 16px;
+    }
+    
+    .sidebar-footer {
+        writing-mode: horizontal-tb;
+        transform: none;
+    }
+    
+    .main-header {
+        margin-top: 50px;
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .d-flex.justify-content-between {
+        flex-direction: column;
+        gap: 15px;
+        align-items: stretch !important;
+    }
+    
+    .dt-buttons {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        width: 100%;
+    }
+    
+    .dt-buttons .btn-excel,
+    .dt-buttons .btn-print {
+        width: 100%;
+        margin-right: 0 !important;
+        justify-content: center;
+    }
+    
+    .btn-add {
+        width: 100%;
+        justify-content: center;
+    }
+    
+    .table-container {
+        padding: 15px;
+        overflow-x: auto;
+    }
+    
+    .table {
+        min-width: 1000px; /* Force horizontal scroll on mobile for better readability */
+    }
+    
+    .dataTables_length,
+    .dataTables_filter {
+        text-align: left;
+        width: 100%;
+    }
+    
+    .dataTables_filter input {
+        width: 100%;
+        margin-left: 0;
+        margin-top: 5px;
+    }
+    
+    .dataTables_paginate {
+        justify-content: center;
+    }
+    
+    .paginate_button {
+        padding: 6px 10px;
+        font-size: 12px;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    .main-header {
+        padding: 15px;
+    }
+    
+    .main-header h1 {
+        font-size: 20px;
+    }
+    
+    .main-header p {
+        font-size: 12px;
+    }
+    
+    .main-content {
+        padding: 15px 10px;
+    }
+    
+    .table-container {
+        padding: 10px;
+    }
+    
+    .dataTables_length select {
+        width: 60px;
+    }
+    
+    .paginate_button {
+        padding: 4px 8px;
+        font-size: 11px;
+    }
+}
+
+@media screen and (min-width: 1400px) {
+    .main-content {
+        max-width: 1600px;
+        margin: 0 auto;
+    }
 }
 
 /* ================== MODAL ================== */
@@ -433,263 +723,6 @@ tr:hover .avatar-circle {
     background: #f8f9fa;
 }
 
-/* ================== EXPORT BUTTONS CONTAINER ================== */
-#exportButtonsContainer {
-    display: inline-block;
-}
-
-.dt-buttons {
-    display: inline-block;
-}
-
-/* ================== MEDIA QUERIES ================== */
-@media screen and (max-width: 992px) {
-    body {
-        padding-left: var(--sidebar-width-mobile);
-    }
-    
-    .sidebar {
-        width: var(--sidebar-width-mobile);
-        padding: 20px 10px;
-    }
-    
-    .logo h2 {
-        font-size: 12px;
-        white-space: normal;
-        word-break: break-word;
-    }
-    
-    .menu a span {
-        display: none;
-    }
-    
-    .menu a {
-        justify-content: center;
-        padding: 12px;
-    }
-    
-    .menu a i {
-        font-size: 20px;
-        margin: 0;
-        width: auto;
-    }
-    
-    .sidebar-footer {
-        font-size: 10px;
-        writing-mode: vertical-rl;
-        transform: rotate(180deg);
-        white-space: nowrap;
-        height: auto;
-        align-self: center;
-    }
-    
-    .main-header {
-        padding: 20px;
-    }
-    
-    .search-box {
-        width: 100%;
-    }
-    
-    .search-box input {
-        width: 100%;
-    }
-    
-    .main-content {
-        padding: 20px 15px;
-    }
-}
-
-@media screen and (max-width: 768px) {
-    .menu-toggle {
-        display: flex;
-    }
-    
-    body {
-        padding-left: 0;
-    }
-    
-    .sidebar {
-        transform: translateX(-100%);
-        width: 260px;
-        padding: 30px 20px;
-    }
-    
-    .sidebar.active {
-        transform: translateX(0);
-    }
-    
-    .sidebar .menu a span {
-        display: inline;
-    }
-    
-    .sidebar .menu a {
-        justify-content: flex-start;
-    }
-    
-    .sidebar .logo h2 {
-        font-size: 16px;
-    }
-    
-    .sidebar-footer {
-        writing-mode: horizontal-tb;
-        transform: none;
-    }
-    
-    .main-header {
-        margin-top: 50px;
-        flex-direction: column;
-        align-items: stretch;
-    }
-    
-    .d-flex.justify-content-between {
-        flex-direction: column;
-        gap: 15px;
-        align-items: stretch !important;
-    }
-    
-    #exportButtonsContainer {
-        width: 100%;
-    }
-    
-    .btn-export-excel {
-        width: 100%;
-        justify-content: center;
-    }
-    
-    .btn-add {
-        width: 100%;
-        justify-content: center;
-    }
-    
-    .table-container {
-        padding: 15px;
-        border-radius: 15px;
-    }
-    
-    .table th, 
-    .table td {
-        padding: 12px 8px;
-        font-size: 13px;
-    }
-    
-    .avatar-circle {
-        width: 30px;
-        height: 30px;
-    }
-    
-    .badge-status {
-        padding: 4px 8px;
-        font-size: 11px;
-        min-width: 70px;
-    }
-    
-    .action-btns .btn {
-        padding: 4px 8px;
-    }
-    
-    .action-btns .btn i {
-        font-size: 12px;
-    }
-    
-    .modal-dialog {
-        margin: 10px;
-    }
-    
-    .modal-body {
-        padding: 20px;
-    }
-    
-    .modal-body .row {
-        margin: 0;
-    }
-    
-    .modal-body .col-md-6 {
-        padding: 0 5px;
-    }
-}
-
-@media screen and (max-width: 480px) {
-    .main-header {
-        padding: 15px;
-    }
-    
-    .main-header h1 {
-        font-size: 20px;
-    }
-    
-    .main-header p {
-        font-size: 12px;
-    }
-    
-    .main-content {
-        padding: 15px 10px;
-    }
-    
-    .table th, 
-    .table td {
-        padding: 10px 6px;
-        font-size: 12px;
-    }
-    
-    .avatar-circle {
-        width: 25px;
-        height: 25px;
-        margin-right: 5px !important;
-    }
-    
-    .avatar-circle i {
-        font-size: 12px;
-    }
-    
-    .badge-status {
-        padding: 3px 6px;
-        font-size: 10px;
-        min-width: 60px;
-    }
-    
-    .action-btns {
-        gap: 3px;
-    }
-    
-    .action-btns .btn {
-        padding: 3px 6px;
-    }
-    
-    .action-btns .btn i {
-        font-size: 10px;
-    }
-    
-    .modal-header {
-        padding: 15px 20px;
-    }
-    
-    .modal-header h5 {
-        font-size: 16px;
-    }
-    
-    .modal-body {
-        padding: 15px;
-    }
-    
-    .form-control,
-    .form-select {
-        padding: 10px 12px;
-        font-size: 14px;
-    }
-    
-    .modal-footer {
-        padding: 15px;
-    }
-}
-
-@media screen and (min-width: 1400px) {
-    .main-content {
-        max-width: 1600px;
-        margin: 0 auto;
-    }
-}
-
 /* ================== ANIMATIONS ================== */
 @keyframes slideIn {
     from {
@@ -729,9 +762,9 @@ tr:hover .avatar-circle {
 @media (hover: none) and (pointer: coarse) {
     .menu a,
     .btn-add,
-    .btn-export-excel,
     .page-link,
-    .action-btns .btn {
+    .action-btns .btn,
+    .paginate_button {
         padding: 15px 20px;
         font-size: 16px;
     }
@@ -764,7 +797,7 @@ tr:hover .avatar-circle {
             <li><a href="{{route('admin.ecole.index')}}"><i class="fas fa-university"></i><span> Écoles</span></a></li>
             <li><a href="{{route('admin.service.index')}}"><i class="fas fa-briefcase"></i><span> Services</span></a></li>
             <li><a href="{{route('admin.listes.Admin')}}"><i class="fas fa-users-cog"></i><span> Administrations</span></a></li>
-            <li><a href="{{route('users.affectation.agent')}}" class="active"><i class="fas fa-chalkboard-teacher"></i><span> Stages / Affectations</span></a></li>
+            <li><a href="{{route('users.affectation.agent')}}"><i class="fas fa-exchange-alt"></i><span> Stages / Affectations</span></a></li>
         </ul>
     </div>
     <div class="sidebar-footer">Application interne sécurisée</div>
@@ -783,31 +816,33 @@ tr:hover .avatar-circle {
     </div>
 </header>
 
-<div class="d-flex justify-content-between mb-3">
+<div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-3">
     <div id="exportButtonsContainer"></div>
     <button class="btn-add" data-bs-toggle="modal" data-bs-target="#addSchoolModal">
         <i class="fas fa-plus-circle me-2"></i>Nouvelle Affectation
     </button>
 </div>
 
+<!-- Table container -->
 <div class="table-container">
-    <table id="schoolsTable" class="table table-hover align-middle w-100">
+    <table id="schoolsTable" class="table table-hover align-middle w-100" style="width:100%">
         <thead>
             <tr>
                 <th><i class="fas fa-id-card me-1"></i>Matricule</th>
-                <th><i class="fas fa-user me-1"></i>Agent / Stagiaire</th>
+                <th><i class="fas fa-user me-1"></i>Agent</th>
                 <th><i class="fas fa-briefcase me-1"></i>Service & Grade</th>
                 <th><i class="fas fa-university me-1"></i>Établissement</th>
-                <th><i class="fas fa-calendar me-1"></i>Période de Stage</th>
+                <th><i class="fas fa-calendar me-1"></i>Période</th>
+                <th><i class="fas fa-tag me-1"></i>Formations</th>
                 <th><i class="fas fa-tag me-1"></i>Statut</th>
-                <th class="no-export text-center"><i class="fas fa-cog me-1"></i>Actions</th>
+                <th class="no-export"><i class="fas fa-cog me-1"></i>Actions</th>
             </tr>
         </thead>
         <tbody>
         @foreach($affectations as $affect)
             @php $st = strtolower($affect->status); @endphp
             <tr>
-                <td class="text-primary fw-bold"><span class="badge bg-light text-dark p-2">#{{ $affect->agent?->matricule }}</span></td>
+                <td><span class="badge bg-light text-dark p-2">#{{ $affect->agent?->matricule }}</span></td>
                 <td>
                     <div class="d-flex align-items-center">
                         <div class="avatar-circle me-2">
@@ -823,13 +858,14 @@ tr:hover .avatar-circle {
                     <span class="badge bg-light text-dark border mb-1">{{ $affect->agent?->grade }}</span>
                     <br><small class="text-muted"><i class="fas fa-building me-1"></i>{{ $affect->agent?->services?->nom_services }}</small>
                 </td>
-                <td class="text-primary fw-bold"><i class="fas fa-school me-1"></i>{{ $affect->ecoles?->nom_ecole }}</td>
+                <td><i class="fas fa-school me-1"></i>{{ $affect->ecoles?->nom_ecole }}</td>
                 <td>
                     <small>
-                        <span class="text-success">Début:</span> {{ \Carbon\Carbon::parse($affect->date_debut)->format('d/m/Y') }}<br>
-                        <span class="text-danger">Fin:</span> {{ \Carbon\Carbon::parse($affect->date_fin)->format('d/m/Y') }}
+                        <span class="text-success">D:</span> {{ \Carbon\Carbon::parse($affect->date_debut)->format('d/m/Y') }}<br>
+                        <span class="text-danger">F:</span> {{ \Carbon\Carbon::parse($affect->date_fin)->format('d/m/Y') }}
                     </small>
                 </td>
+                <td>{{ $affect->type_formations }}</td>
                 <td>
                     @php
                         $class = 'status-encours';
@@ -840,16 +876,16 @@ tr:hover .avatar-circle {
                 </td>
                 <td class="text-center no-export">
                     <div class="action-btns">
-                        <a href="{{ route('users.editAffectationt.agent', $affect->id) }}" class="btn btn-outline-primary" title="Modifier">
+                        <a href="{{ route('users.editAffectationt.agent', $affect->id) }}" class="btn btn-outline-primary btn-sm" title="Modifier">
                             <i class="fas fa-edit"></i>
                         </a>
                         @if($st!=='terminé' && $st!=='termine')
-                        <button onclick="changeStatus({{ $affect->id }},'Terminé')" class="btn btn-outline-success" title="Marquer comme terminé">
+                        <button onclick="changeStatus({{ $affect->id }},'Terminé')" class="btn btn-outline-success btn-sm" title="Marquer comme terminé">
                             <i class="fas fa-check"></i>
                         </button>
                         @endif
                         @if($st!=='annulé' && $st!=='annule')
-                        <button onclick="changeStatus({{ $affect->id }},'Annulé')" class="btn btn-outline-danger" title="Annuler">
+                        <button onclick="changeStatus({{ $affect->id }},'Annulé')" class="btn btn-outline-danger btn-sm" title="Annuler">
                             <i class="fas fa-times"></i>
                         </button>
                         @endif
@@ -859,9 +895,6 @@ tr:hover .avatar-circle {
         @endforeach
         </tbody>
     </table>
-    <div class="d-flex justify-content-center mt-4">
-        {{ $affectations->links() }}
-    </div>
 </div>
 
 </div>
@@ -878,6 +911,12 @@ tr:hover .avatar-circle {
                 @csrf
                 <div class="modal-body">
                     <div class="row g-3">
+                         <div class="col-md-6">
+                            <label class="form-label fw-bold">
+                                <i class="fas fa-calendar-plus me-1 text-primary"></i> Formations
+                            </label>
+                            <input type="text" name="type_formations" class="form-control" required>
+                        </div>
                         <div class="col-md-6">
                             <label class="form-label fw-bold">
                                 <i class="fas fa-calendar-plus me-1 text-primary"></i> Date de Début
@@ -937,46 +976,12 @@ tr:hover .avatar-circle {
 <script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.bootstrap5.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 <script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.html5.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.print.min.js"></script>
 
 <script>
-$(document).ready(function() {
-    // Initialize DataTable
-    var table = $('#schoolsTable').DataTable({
-        language: { 
-            url: "//cdn.datatables.net/plug-ins/1.13.7/i18n/fr-FR.json",
-            search: "",
-            searchPlaceholder: "Rechercher..."
-        },
-        dom: 'Brtip',
-        buttons: [{
-            extend: 'excelHtml5',
-            text: '<i class="fas fa-file-excel me-2"></i> Exporter la liste filtrée',
-            className: 'btn-export-excel',
-            title: 'Registre_Stages_ASP_' + new Date().toISOString().slice(0,10),
-            exportOptions: { 
-                columns: "thead th:not(.no-export)", 
-                modifier: { page: 'current' } 
-            }
-        }],
-        pageLength: 10,
-        responsive: true,
-        paging: false,
-        ordering: true,
-        order: [[4, "asc"]],
-        lengthChange: false,
-        info: false
-    });
-    
-    // Move export buttons to container
-    table.buttons().container().appendTo('#exportButtonsContainer');
-    
-    // Custom search
-    $('#searchInput').on('keyup', function() {
-        table.search(this.value).draw();
-    });
-
-    // Mobile menu toggle
-    $('#menuToggle').click(function() {
+$(document).ready(function () {
+    // Menu toggle for mobile
+    $('#menuToggle').on('click', function() {
         $('#sidebar').toggleClass('active');
         $(this).find('i').toggleClass('fa-bars fa-times');
     });
@@ -991,76 +996,85 @@ $(document).ready(function() {
         }
     });
 
-    // Handle window resize
-    $(window).on('resize', function() {
-        if ($(window).width() > 768) {
-            $('#sidebar').removeClass('active');
-            $('#menuToggle i').removeClass('fa-times').addClass('fa-bars');
-        }
-    });
-
-    // Success message
-    @if(session('success'))
-    Swal.fire({ 
-        icon: 'success', 
-        title: 'Opération réussie', 
-        text: "{{ session('success') }}", 
-        toast: true, 
-        position: 'top-end', 
-        showConfirmButton: false, 
-        timer: 3000,
-        timerProgressBar: true
-    });
-    @endif
-
-    // Error messages
-    @if(session('error'))
-    Swal.fire({ 
-        icon: 'error', 
-        title: 'Erreur', 
-        text: "{{ session('error') }}",
-        confirmButtonColor: '#0B3D2E'
-    });
-    @endif
-
-    @if($errors->any())
-    Swal.fire({ 
-        icon: 'error', 
-        title: 'Erreur de validation', 
-        html: '{!! implode("<br>", $errors->all()) !!}',
-        confirmButtonColor: '#0B3D2E'
-    });
-    @endif
-
-    // Form validation
-    $('#addAffectationForm').on('submit', function(e) {
-        let dateDebut = $('input[name="date_debut"]').val();
-        let dateFin = $('input[name="date_fin"]').val();
-        let agent = $('select[name="agent_stagiare_id"]').val();
-        let ecole = $('select[name="ecole_stage_id"]').val();
+    // Vérifier que le tableau existe
+    if ($('#schoolsTable').length > 0) {
         
-        if (!dateDebut || !dateFin || !agent || !ecole) {
-            e.preventDefault();
-            Swal.fire({
-                icon: 'error',
-                title: 'Champs obligatoires',
-                text: 'Veuillez remplir tous les champs.',
-                confirmButtonColor: '#0B3D2E'
-            });
-        } else if (new Date(dateFin) < new Date(dateDebut)) {
-            e.preventDefault();
-            Swal.fire({
-                icon: 'error',
-                title: 'Dates invalides',
-                text: 'La date de fin doit être postérieure à la date de début.',
-                confirmButtonColor: '#0B3D2E'
-            });
+        // Détruire toute instance existante
+        if ($.fn.DataTable.isDataTable('#schoolsTable')) {
+            $('#schoolsTable').DataTable().destroy();
         }
-    });
+        
+        // Initialiser DataTable avec configuration responsive
+        var table = $('#schoolsTable').DataTable({
+            language: {
+                url: "//cdn.datatables.net/plug-ins/1.13.7/i18n/fr-FR.json",
+                paginate: {
+                    previous: "<i class='fas fa-chevron-left'></i>",
+                    next: "<i class='fas fa-chevron-right'></i>"
+                }
+            },
+            responsive: false, // Désactivé pour garder le contrôle manuel
+            autoWidth: false,
+            paging: true,
+            pageLength: 10,
+            lengthMenu: [5, 10, 25, 50, 100],
+            ordering: true,
+            searching: true,
+            info: true,
+            dom: '<"row"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6"f>>rt<"row"<"col-sm-12 col-md-5"i><"col-sm-12 col-md-7"p>>',
+            buttons: [
+                {
+                    extend: 'excelHtml5',
+                    text: '<i class="fas fa-file-excel me-1"></i> Exporter en Excel',
+                    className: 'btn-excel',
+                    titleAttr: 'Exporter en Excel',
+                    exportOptions: {
+                        columns: ':visible:not(.no-export)'
+                    }
+                },
+                {
+                    extend: 'print',
+                    text: '<i class="fas fa-print me-1"></i> Imprimer',
+                    className: 'btn-print',
+                    titleAttr: 'Imprimer',
+                    exportOptions: {
+                        columns: ':visible:not(.no-export)'
+                    }
+                }
+            ],
+            columnDefs: [
+                { targets: 'no-export', orderable: false, searchable: false }
+            ],
+            drawCallback: function(settings) {
+                console.log('Page dessinée, total enregistrements:', settings.fnRecordsDisplay());
+            },
+            initComplete: function() {
+                // Déplacer les boutons dans le conteneur personnalisé
+                this.api().buttons().container()
+                    .appendTo('#exportButtonsContainer')
+                    .css('display', 'flex')
+                    .css('gap', '10px');
+            }
+        });
 
-    // Reset form when modal is closed
-    $('#addSchoolModal').on('hidden.bs.modal', function() {
-        $('#addAffectationForm')[0].reset();
+        // Recherche personnalisée (optionnelle car DataTables a déjà sa recherche)
+        $('#searchInput').on('keyup', function () {
+            table.search(this.value).draw();
+        });
+
+        // Raccourci pour DataTable
+        window.dtTable = table;
+        
+        console.log('DataTable initialisé avec succès');
+    } else {
+        console.error('Tableau #schoolsTable non trouvé');
+    }
+
+    // Gestionnaire pour le redimensionnement de la fenêtre
+    $(window).on('resize', function() {
+        if ($.fn.DataTable.isDataTable('#schoolsTable')) {
+            $('#schoolsTable').DataTable().columns.adjust().draw();
+        }
     });
 });
 

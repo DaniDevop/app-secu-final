@@ -12,7 +12,7 @@ class AffectationController extends Controller
 {
     public function index(){
      
-    $affectations=AffectionAgent::paginate(5);
+    $affectations=AffectionAgent::all();
     $agentAll=AgentStagiare::all();
     $ecoleStageAll=EcoleStage::all();
     
@@ -40,8 +40,8 @@ class AffectationController extends Controller
            'agent_stagiare_id'=>'required',
            'ecole_stage_id'=>'required',
            'date_debut'=>'required',
-            'date_fin'=>'required'
-
+            'date_fin'=>'required',
+            'type_formations'=>'required'
       ]);
 
       $affectation=new AffectionAgent();
@@ -49,6 +49,7 @@ class AffectationController extends Controller
     $affectation->ecole_stage_id=$request->ecole_stage_id;
     $affectation->date_debut=$request->date_debut;
     $affectation->date_fin=$request->date_fin;
+      $affectation->type_formations=$request->type_formations;
       $affectation->save();
       //toastr()->info('Agent Affecté avec success !');
       return back();
@@ -60,22 +61,27 @@ class AffectationController extends Controller
 
 
      public function EditAffectationAgent(Request $request){
-          
+          //dd($request->all());
       $data=$request->validate([
            'agent_stagiare_id'=>'required',
            'ecole_stage_id'=>'required',
            'date_debut'=>'required',
             'date_fin'=>'required',
-            'id'=>'required'
+            'type_formations'=>'required',
+            'affectation_id'=>'required'
 
       ]);
-
-      $affectation=AffectionAgent::find($request->id);
+          
+      $affectation=AffectionAgent::find($request->affectation_id);
       if(!$affectation){
+        
+        return back();
       }
+      
       $affectation->agent_stagiare_id=$request->agent_stagiare_id;
     $affectation->ecole_stage_id=$request->ecole_stage_id;
     $affectation->date_debut=$request->date_debut;
+    $affectation->type_formations=$request->type_formations;
     $affectation->date_fin=$request->date_fin;
       $affectation->save();
       //toastr()->success('Information modifié avec success !');
