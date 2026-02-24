@@ -971,19 +971,7 @@
         </header>
 
 
-        <!-- Header -->
-<header class="main-header">
-    <div class="header-left">
-        <h1><i class="fas fa-university"></i> Gestion des Administrateurs</h1>
-        <p>Administration des comptes administrateurs</p>
-    </div>
-    <div class="header-right">
-        <div class="search-box">
-            <i class="fas fa-search"></i>
-            <input type="text" id="searchInput" placeholder="Rechercher un administrateur...">
-        </div>
-    </div>
-</header>
+ 
 <!-- ZONE DE NOTIFICATIONS -->
 <div class="notification-area" id="notificationArea">
     @if(session('success'))
