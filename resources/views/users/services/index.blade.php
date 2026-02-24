@@ -48,6 +48,20 @@
         </div>
     </header>
 
+    
+@if($errors->any())
+    <div style="background:red;color:white;padding:10px;">
+        {{ implode('', $errors->all()) }}
+    </div>
+@endif
+
+@if(session('success'))
+    <div class="alert alert-success alert-dismissible fade show">
+        {{ session('success') }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+@endif
+
     <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
         <div class="breadcrumb-mini">
             <span class="text-muted">Administration</span> / <strong>Services</strong>

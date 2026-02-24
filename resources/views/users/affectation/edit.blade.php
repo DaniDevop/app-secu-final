@@ -11,7 +11,7 @@
 <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/dataTables.bootstrap5.min.css">
 <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.4.2/css/buttons.bootstrap5.min.css">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
-
+<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
 <style>
 /* ================== THEME ================== */
 :root {
@@ -831,7 +831,7 @@ tr:hover .avatar-circle {
 <script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.bootstrap5.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 <script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.html5.min.js"></script>
-
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
 <script>
 $(document).ready(function() {
     // Initialize DataTable
@@ -895,16 +895,20 @@ $(document).ready(function() {
 
     // Success message
     @if(session('success'))
-    Swal.fire({ 
-        icon: 'success', 
-        title: 'Opération réussie', 
-        text: "{{ session('success') }}", 
-        toast: true, 
-        position: 'top-end', 
-        showConfirmButton: false, 
-        timer: 3000,
-        timerProgressBar: true
-    });
+    Toastify({
+  text: "This is a toast",
+  duration: 3000,
+  destination: "https://github.com/apvarun/toastify-js",
+  newWindow: true,
+  close: true,
+  gravity: "top", // `top` or `bottom`
+  position: "left", // `left`, `center` or `right`
+  stopOnFocus: true, // Prevents dismissing of toast on hover
+  style: {
+    background: "linear-gradient(to right, #00b09b, #96c93d)",
+  },
+  onClick: function(){} // Callback after click
+}).showToast();
     @endif
 
     // Error messages
@@ -917,14 +921,7 @@ $(document).ready(function() {
     });
     @endif
 
-    @if($errors->any())
-    Swal.fire({ 
-        icon: 'error', 
-        title: 'Erreur de validation', 
-        html: '{!! implode("<br>", $errors->all()) !!}',
-        confirmButtonColor: '#0B3D2E'
-    });
-    @endif
+   
 
     // Form validation
     $('#editAffectationForm').on('submit', function(e) {

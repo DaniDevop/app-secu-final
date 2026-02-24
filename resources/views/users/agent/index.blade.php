@@ -766,6 +766,19 @@ body.sidebar-collapsed {
     <input type="text" id="searchInput" class="form-control" placeholder="Rechercher...">
 </header>
 
+@if($errors->any())
+    <div style="background:red;color:white;padding:10px;">
+        {{ implode('', $errors->all()) }}
+    </div>
+@endif
+
+@if(session('success'))
+    <div class="alert alert-success alert-dismissible fade show">
+        {{ session('success') }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+@endif
+
 <div class="d-flex justify-content-between align-items-center my-4">
     <div id="exportButtonsContainer"></div>
     <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addStagiareModal">
@@ -973,16 +986,7 @@ $(document).ready(function(){
                     modifier: { search: 'applied' }
                 }
             },
-            {
-                extend: 'print',
-                text: '<i class="fas fa-print me-2"></i>Imprimer',
-                className: 'btn btn-dark',
-                title: 'Liste des Stagiaires - Sécurité Pénitentiaire',
-                exportOptions: {
-                    columns: ':not(.no-export)',
-                    modifier: { search: 'applied' }
-                }
-            }
+            
         ]
     });
 

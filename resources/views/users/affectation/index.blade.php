@@ -816,6 +816,19 @@ tr:hover .avatar-circle {
     </div>
 </header>
 
+@if($errors->any())
+    <div style="background:red;color:white;padding:10px;">
+        {{ implode('', $errors->all()) }}
+    </div>
+@endif
+
+@if(session('success'))
+    <div class="alert alert-success alert-dismissible fade show">
+        {{ session('success') }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+@endif
+
 <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-3">
     <div id="exportButtonsContainer"></div>
     <button class="btn-add" data-bs-toggle="modal" data-bs-target="#addSchoolModal">
@@ -844,13 +857,9 @@ tr:hover .avatar-circle {
             <tr>
                 <td><span class="badge bg-light text-dark p-2">#{{ $affect->agent?->matricule }}</span></td>
                 <td>
-                    <div class="d-flex align-items-center">
-                        <div class="avatar-circle me-2">
-                            <i class="fas fa-user"></i>
-                        </div>
+                    
                         <div>
-                            <span class="fw-bold">{{ $affect->agent?->name }}</span>
-                            <br><small class="text-muted">{{ $affect->agent?->prenom }}</small>
+                            <span class="fw-bold">{{ $affect->agent?->name }} <br>{{ $affect->agent?->prenom }}</span>
                         </div>
                     </div>
                 </td>

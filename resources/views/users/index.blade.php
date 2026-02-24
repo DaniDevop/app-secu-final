@@ -8,6 +8,9 @@
 <!-- Font Awesome pour les icônes -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
+<!-- Chart.js pour les graphiques -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+
 <style>
 /* ===== RESET ===== */
 *{
@@ -234,7 +237,7 @@ body{
     margin:0;
 }
 
-/* ===== SECTION TABLE ===== */
+/* ===== SECTION GRAPHIQUES ===== */
 .section{
     margin-top:50px;
 }
@@ -252,76 +255,101 @@ body{
     color:#D4AF37;
 }
 
-.table-container {
-    background:white;
-    border-radius:20px;
-    padding:20px;
-    box-shadow:0 8px 20px rgba(0,0,0,0.08);
-    overflow-x:auto;
-    -webkit-overflow-scrolling:touch;
+.charts-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+    gap: 25px;
+    margin-bottom: 30px;
 }
 
-table{
-    width:100%;
-    border-collapse:collapse;
-    min-width:600px;
+.chart-card {
+    background: white;
+    border-radius: 20px;
+    padding: 25px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+    transition: 0.3s;
 }
 
-thead{
-    background:#1B4332;
-    color:white;
+.chart-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 30px rgba(0,0,0,0.12);
 }
 
-thead th {
-    padding:15px;
-    font-weight:600;
-    white-space:nowrap;
+.chart-card h3 {
+    color: #1B4332;
+    font-size: 18px;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #f0f0f0;
 }
 
-thead th i {
-    margin-right:8px;
-    opacity:0.9;
+.chart-card h3 i {
+    color: #D4AF37;
 }
 
-th, td{
-    padding:15px;
-    text-align:left;
+.chart-wrapper {
+    position: relative;
+    height: 250px;
+    width: 100%;
 }
 
-tbody tr{
-    border-bottom:1px solid #e9ecef;
-    transition:0.2s;
+/* Stats supplémentaires */
+.stats-mini {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 15px;
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 2px solid #f0f0f0;
 }
 
-tbody tr:hover{
-    background:#f8f9fa;
+.stat-item {
+    text-align: center;
 }
 
-.status{
-    padding:6px 12px;
-    border-radius:30px;
-    font-size:12px;
-    font-weight:bold;
-    display:inline-block;
-    white-space:nowrap;
+.stat-label {
+    font-size: 12px;
+    color: #6c757d;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
 
-.en-cours{
-    background:#d4edda;
-    color:#155724;
-    border:1px solid #c3e6cb;
+.stat-value {
+    font-size: 18px;
+    font-weight: bold;
+    color: #1B4332;
+    margin-top: 5px;
 }
 
-.termine{
-    background:#e2e3e5;
-    color:#383d41;
-    border:1px solid #d6d8db;
+.stat-value small {
+    font-size: 12px;
+    color: #6c757d;
+    font-weight: normal;
 }
 
-.attente{
-    background:#fff3cd;
-    color:#856404;
-    border:1px solid #ffeeba;
+/* Légende personnalisée */
+.chart-legend {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 20px;
+    margin-top: 20px;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+}
+
+.legend-color {
+    width: 12px;
+    height: 12px;
+    border-radius: 4px;
 }
 
 /* ===== ANIMATIONS ===== */
@@ -336,7 +364,7 @@ tbody tr:hover{
     }
 }
 
-.card, .section {
+.card, .section, .chart-card {
     animation:slideIn 0.5s ease;
 }
 
@@ -375,6 +403,10 @@ tbody tr:hover{
     
     .card p {
         font-size:28px;
+    }
+    
+    .charts-container {
+        grid-template-columns: 1fr;
     }
 }
 
@@ -424,22 +456,17 @@ tbody tr:hover{
         font-size:26px;
     }
     
-    .table-container {
-        padding:15px;
+    .chart-card {
+        padding: 20px;
     }
     
-    table {
-        min-width:500px;
+    .chart-wrapper {
+        height: 220px;
     }
     
-    th, td {
-        padding:12px 10px;
-        font-size:14px;
-    }
-    
-    .status {
-        padding:4px 10px;
-        font-size:11px;
+    .stats-mini {
+        grid-template-columns: 1fr;
+        gap: 10px;
     }
 }
 
@@ -477,18 +504,12 @@ tbody tr:hover{
         font-size:16px;
     }
     
-    .table-container {
-        padding:10px;
+    .chart-card h3 {
+        font-size: 16px;
     }
     
-    th, td {
-        padding:10px 8px;
-        font-size:12px;
-    }
-    
-    .status {
-        padding:3px 8px;
-        font-size:10px;
+    .chart-wrapper {
+        height: 200px;
     }
 }
 
@@ -496,16 +517,12 @@ tbody tr:hover{
 @media (hover: none) and (pointer: coarse) {
     .menu a,
     .card,
-    .status {
+    .chart-card {
         cursor:pointer;
     }
     
     .menu a {
         padding:15px;
-    }
-    
-    th, td {
-        padding:15px 10px;
     }
 }
 </style>
@@ -535,8 +552,7 @@ tbody tr:hover{
             <li><a href="{{route('admin.ecole.index')}}"><i class="fas fa-school"></i> Écoles</a></li>
             <li><a href="{{route('admin.service.index')}}"><i class="fas fa-briefcase"></i> Services</a></li>
             <li><a href="{{route('admin.listes.Admin')}}"><i class="fas fa-user-tie"></i> Administrations</a></li>
-            <li><a href="{{route('users.affectation.agent')}}"><i class="fas fa-exchange-alt"></i><span> Stages / Affectations</span></a></li>
-            <li><a href="#"><i class="fas fa-chart-bar"></i> Rapports</a></li>
+            <li><a href="{{route('users.affectation.agent')}}"><i class="fas fa-exchange-alt"></i> Stages / Affectations</a></li>
         </ul>
     </div>
 
@@ -555,7 +571,7 @@ tbody tr:hover{
         </h1>
         <div class="user-info">
             <i class="fas fa-user-cog"></i>
-            Admin Général
+            {{ Auth::user()->grade }}  {{ Auth::user()->name }}
         </div>
     </div>
 
@@ -563,82 +579,121 @@ tbody tr:hover{
         <div class="card">
             <i class="fas fa-user-shield"></i>
             <h3>Agents enregistrés</h3>
-            <p>248</p>
-            <small style="color:#6c757d; margin-top:10px;">+12 ce mois</small>
+            <p> {{$agentCount }} </p>
+            <small style="color:#6c757d; margin-top:10px;">Total des effectifs</small>
         </div>
 
         <div class="card">
             <i class="fas fa-clock"></i>
             <h3>Stages en cours</h3>
-            <p>32</p>
-            <small style="color:#6c757d; margin-top:10px;">78% de taux d'occupation</small>
+            <p> {{$stageEncours}} </p>
+            <small style="color:#6c757d; margin-top:10px;">{{$stageEncours > 0 ? round(($stageEncours/($stageEncours+$stageValider))*100, 1) : 0}}% des stages actifs</small>
         </div>
 
         <div class="card">
             <i class="fas fa-university"></i>
             <h3>Écoles partenaires</h3>
-            <p>6</p>
-            <small style="color:#6c757d; margin-top:10px;">+2 cette année</small>
+            <p> {{$EcoleStage}} </p>
+            <small style="color:#6c757d; margin-top:10px;">Établissements</small>
         </div>
 
         <div class="card">
             <i class="fas fa-check-circle"></i>
             <h3>Stages terminés</h3>
-            <p>115</p>
-            <small style="color:#6c757d; margin-top:10px;">84% de réussite</small>
+            <p> {{$stageValider}} </p>
+            <small style="color:#6c757d; margin-top:10px;">{{$stageValider > 0 ? round(($stageValider/($stageEncours+$stageValider))*100, 1) : 0}}% des stages</small>
         </div>
     </div>
 
     <div class="section">
         <h2>
-            <i class="fas fa-history"></i>
-            Dernières affectations
+            <i class="fas fa-chart-line"></i>
+            Analyse des Stages
         </h2>
-        <div class="table-container">
-            <table>
-                <thead>
-                    <tr>
-                        <th><i class="fas fa-id-card"></i> Matricule</th>
-                        <th><i class="fas fa-user"></i> Nom</th>
-                        <th><i class="fas fa-school"></i> École</th>
-                        <th><i class="fas fa-tag"></i> Statut</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td><strong>SPG001</strong></td>
-                        <td>NDONG Jean</td>
-                        <td>École Nationale</td>
-                        <td><span class="status en-cours"><i class="fas fa-play me-1"></i>En cours</span></td>
-                    </tr>
-                    <tr>
-                        <td><strong>SPG014</strong></td>
-                        <td>OYONO Marc</td>
-                        <td>Centre Spécialisé</td>
-                        <td><span class="status attente"><i class="fas fa-hourglass-half me-1"></i>En attente</span></td>
-                    </tr>
-                    <tr>
-                        <td><strong>SPG022</strong></td>
-                        <td>MBADINGA Paul</td>
-                        <td>École Militaire</td>
-                        <td><span class="status termine"><i class="fas fa-check me-1"></i>Terminé</span></td>
-                    </tr>
-                    <tr>
-                        <td><strong>SPG045</strong></td>
-                        <td>BISSIEL Alice</td>
-                        <td>Institut Supérieur</td>
-                        <td><span class="status en-cours"><i class="fas fa-play me-1"></i>En cours</span></td>
-                    </tr>
-                    <tr>
-                        <td><strong>SPG089</strong></td>
-                        <td>MENGUE Pierre</td>
-                        <td>Académie de Police</td>
-                        <td><span class="status attente"><i class="fas fa-hourglass-half me-1"></i>En attente</span></td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
         
+        <div class="charts-container">
+            <!-- Graphique en camembert (Donut) -->
+            <div class="chart-card">
+                <h3>
+                    <i class="fas fa-chart-pie"></i>
+                    Répartition des Stages
+                </h3>
+                <div class="chart-wrapper">
+                    <canvas id="stagesDonutChart"></canvas>
+                </div>
+                <div class="stats-mini">
+                    <div class="stat-item">
+                        <div class="stat-label">En cours</div>
+                        <div class="stat-value" style="color: #1B4332;">{{$stageEncours}}</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Terminés</div>
+                        <div class="stat-value" style="color: #D4AF37;">{{$stageValider}}</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Total</div>
+                        <div class="stat-value">{{$stageEncours + $stageValider}}</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Graphique en barres -->
+            <div class="chart-card">
+                <h3>
+                    <i class="fas fa-chart-bar"></i>
+                    Stages par École
+                </h3>
+                <div class="chart-wrapper">
+                    <canvas id="ecolesBarChart"></canvas>
+                </div>
+                <div class="chart-legend" id="ecolesLegend">
+                    <!-- La légende sera générée dynamiquement -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Deuxième ligne de graphiques -->
+        <div class="charts-container">
+            <!-- Graphique linéaire (évolution) -->
+            <div class="chart-card">
+                <h3>
+                    <i class="fas fa-chart-line"></i>
+                    Évolution Mensuelle
+                </h3>
+                <div class="chart-wrapper">
+                    <canvas id="evolutionLineChart"></canvas>
+                </div>
+                <div style="margin-top: 15px; text-align: center; color: #6c757d; font-size: 13px;">
+                    <i class="fas fa-calendar-alt me-1"></i> Derniers 6 mois
+                </div>
+            </div>
+
+            <!-- Graphique en barres horizontales (Grades) -->
+            <div class="chart-card">
+                <h3>
+                    <i class="fas fa-star"></i>
+                    Stagiaires par Grade
+                </h3>
+                <div class="chart-wrapper">
+                    <canvas id="gradesBarChart"></canvas>
+                </div>
+                <div class="stats-mini">
+                    <div class="stat-item">
+                        <div class="stat-label">Officiers</div>
+                        <div class="stat-value">32</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Sous-officiers</div>
+                        <div class="stat-value">58</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Autres</div>
+                        <div class="stat-value">10</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- Mini footer d'information -->
         <div style="margin-top:20px; text-align:right;">
             <small style="color:#6c757d;">
@@ -704,46 +759,200 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
     
-    // Animation des cartes au survol (optionnel)
-    const cards = document.querySelectorAll('.card');
+    // ===== INITIALISATION DES GRAPHIQUES =====
+    
+    // Données depuis le backend (avec valeurs par défaut si non définies)
+    const stageEncours = {{$stageEncours ?? 24}};
+    const stageValider = {{$stageValider ?? 18}};
+    const totalStages = stageEncours + stageValider;
+    
+    // 1. Graphique en camembert (Donut)
+    const donutCtx = document.getElementById('stagesDonutChart').getContext('2d');
+    new Chart(donutCtx, {
+        type: 'doughnut',
+        data: {
+            labels: ['Stages en cours', 'Stages terminés'],
+            datasets: [{
+                data: [stageEncours, stageValider],
+                backgroundColor: ['#1B4332', '#D4AF37'],
+                borderColor: ['#0F2B21', '#B8960F'],
+                borderWidth: 2,
+                hoverOffset: 8
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            cutout: '65%',
+            plugins: {
+                legend: {
+                    display: true,
+                    position: 'bottom',
+                    labels: {
+                        usePointStyle: true,
+                        pointStyle: 'circle',
+                        padding: 20,
+                        font: {
+                            size: 12
+                        }
+                    }
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            const label = context.label || '';
+                            const value = context.raw || 0;
+                            const percentage = totalStages > 0 ? ((value / totalStages) * 100).toFixed(1) : 0;
+                            return `${label}: ${value} (${percentage}%)`;
+                        }
+                    }
+                }
+            }
+        }
+    });
+    
+    // 2. Graphique en barres (Stages par école)
+    const ecolesCtx = document.getElementById('ecolesBarChart').getContext('2d');
+    new Chart(ecolesCtx, {
+        type: 'bar',
+        data: {
+            labels: ['École Nationale', 'Centre Spécialisé', 'École Militaire', 'Institut Supérieur', 'Académie Police'],
+            datasets: [{
+                label: 'Nombre de stages',
+                data: [12, 8, 15, 7, 10],
+                backgroundColor: '#1B4332',
+                borderRadius: 6,
+                barPercentage: 0.7
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: false
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    grid: {
+                        color: '#e9ecef'
+                    }
+                },
+                x: {
+                    grid: {
+                        display: false
+                    }
+                }
+            }
+        }
+    });
+    
+    // 3. Graphique linéaire (Évolution mensuelle)
+    const evolutionCtx = document.getElementById('evolutionLineChart').getContext('2d');
+    new Chart(evolutionCtx, {
+        type: 'line',
+        data: {
+            labels: ['Sep', 'Oct', 'Nov', 'Déc', 'Jan', 'Fév'],
+            datasets: [
+                {
+                    label: 'Nouveaux stages',
+                    data: [8, 12, 15, 10, 18, 14],
+                    borderColor: '#1B4332',
+                    backgroundColor: 'rgba(27, 67, 50, 0.1)',
+                    tension: 0.4,
+                    fill: true,
+                    pointBackgroundColor: '#1B4332',
+                    pointBorderColor: 'white',
+                    pointBorderWidth: 2,
+                    pointRadius: 5,
+                    pointHoverRadius: 7
+                },
+                {
+                    label: 'Stages terminés',
+                    data: [5, 8, 10, 12, 9, 15],
+                    borderColor: '#D4AF37',
+                    backgroundColor: 'rgba(212, 175, 55, 0.1)',
+                    tension: 0.4,
+                    fill: true,
+                    pointBackgroundColor: '#D4AF37',
+                    pointBorderColor: 'white',
+                    pointBorderWidth: 2,
+                    pointRadius: 5,
+                    pointHoverRadius: 7
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'bottom'
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    grid: {
+                        color: '#e9ecef'
+                    }
+                }
+            }
+        }
+    });
+    
+    // 4. Graphique en barres horizontales (Grades)
+    const gradesCtx = document.getElementById('gradesBarChart').getContext('2d');
+    new Chart(gradesCtx, {
+        type: 'bar',
+        data: {
+            labels: ['Caporal', 'Sergent', 'Adjudant', 'Lieutenant', 'Capitaine', 'Commandant'],
+            datasets: [{
+                label: 'Nombre de stagiaires',
+                data: [25, 18, 12, 8, 5, 2],
+                backgroundColor: '#D4AF37',
+                borderRadius: 6
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            indexAxis: 'y',
+            plugins: {
+                legend: {
+                    display: false
+                }
+            },
+            scales: {
+                x: {
+                    beginAtZero: true,
+                    grid: {
+                        color: '#e9ecef'
+                    }
+                },
+                y: {
+                    grid: {
+                        display: false
+                    }
+                }
+            }
+        }
+    });
+    
+    // Animation des cartes au survol
+    const cards = document.querySelectorAll('.card, .chart-card');
     cards.forEach(card => {
         card.addEventListener('mouseenter', function() {
             this.style.transition = 'all 0.3s ease';
         });
     });
-
-    // Simulation de données dynamiques (à remplacer par vos données réelles)
-    @if(isset($agentsCount))
-        // Si vous avez des données du backend, vous pouvez les afficher ici
-        console.log('Données chargées');
-    @endif
 });
-
-// Fonction pour rafraîchir les données (optionnel)
-function refreshData() {
-    // À implémenter selon vos besoins
-    console.log('Rafraîchissement des données...');
-}
 </script>
 
 <!-- Script optionnel pour SweetAlert si vous voulez des notifications -->
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<script>
-// Exemple de notification (à décommenter si besoin)
-/*
-@if(session('success'))
-    Swal.fire({
-        icon: 'success',
-        title: 'Succès',
-        text: "{{ session('success') }}",
-        toast: true,
-        position: 'top-end',
-        showConfirmButton: false,
-        timer: 3000
-    });
-@endif
-*/
-</script>
 
 </body>
 </html>

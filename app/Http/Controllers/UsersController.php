@@ -7,7 +7,8 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-
+use App\Models\AgentStagiare;
+use App\Models\EcoleStage;                           
 class UsersController extends Controller
 {
     
@@ -42,8 +43,10 @@ class UsersController extends Controller
       $stageValider=AffectionAgent::where('status','Terminé')->count();
      $stageEncours=AffectionAgent::where('status','En-cours')->count();
      $stageAnnule=AffectionAgent::where('status','Annulé')->count();
+     $agentCount=AgentStagiare::count();
+        $EcoleStage=EcoleStage::count();
 
-      return view('users.index',compact('stageAnnule','stageEncours','stageValider'));
+      return view('users.index',compact('stageAnnule','stageEncours','stageValider','agentCount','EcoleStage'));
       }
 
 

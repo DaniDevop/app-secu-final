@@ -60,10 +60,11 @@ public function SaveEditEcole(Request $request)
      public function addEcole(Request $request){
 
         $data=$request->validate([
-          'nom_ecole'=>'required',
+          'nom_ecole'=>'required|unique:ecole_stages,nom_ecole',
           'pays'=>'required'
         ],[
             'nom_ecole.required'=>'Le nom de l ecole est requis !',
+            'nom_ecole.unique'=>'Ce nom d\'école existe déjà !',
             'pays.required'=>'Veuillez entrer un pays'
         ]);
 
@@ -92,7 +93,10 @@ public function SaveEditEcole(Request $request)
          public function addservice(Request $request){
 
        $credentials = $request->validate([
-            'nom_services' => ['required'],
+            'nom_services' => 'required|unique:service_agents,nom_services',
+        ],[
+            'nom_services.required' => 'Le nom du service est requis !',
+            'nom_services.unique' => 'Ce service existe déjà !'
         ]);
 
         $service= new ServiceAgent();

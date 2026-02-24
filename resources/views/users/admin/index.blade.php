@@ -819,6 +819,97 @@
                 padding: 15px 10px;
             }
         }
+
+        /* ================== NOTIFICATIONS ================== */
+.notification-area {
+    width: 100%;
+    animation: slideDown 0.5s ease;
+}
+
+.notification-area .alert {
+    border-radius: 12px;
+    padding: 15px 20px;
+    border: none;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    margin-bottom: 15px;
+}
+
+.notification-area .alert-success {
+    background: linear-gradient(135deg, #d4edda, #c3e6cb);
+    color: #155724;
+    border-left: 5px solid #28a745;
+}
+
+.notification-area .alert-danger {
+    background: linear-gradient(135deg, #f8d7da, #f5c6cb);
+    color: #721c24;
+    border-left: 5px solid #dc3545;
+}
+
+.notification-area .alert-warning {
+    background: linear-gradient(135deg, #fff3cd, #ffeeba);
+    color: #856404;
+    border-left: 5px solid #ffc107;
+}
+
+.notification-area .alert ul {
+    list-style-type: none;
+    padding-left: 20px;
+}
+
+.notification-area .alert ul li {
+    margin-bottom: 5px;
+    position: relative;
+}
+
+.notification-area .alert ul li:before {
+    content: "•";
+    color: #856404;
+    font-weight: bold;
+    position: absolute;
+    left: -15px;
+}
+
+.notification-area .alert i {
+    font-size: 18px;
+}
+
+.notification-area .btn-close {
+    filter: none;
+    opacity: 0.5;
+}
+
+.notification-area .btn-close:hover {
+    opacity: 1;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Version mobile */
+@media screen and (max-width: 768px) {
+    .notification-area {
+        margin-bottom: 15px;
+    }
+    
+    .notification-area .alert {
+        padding: 12px 15px;
+        font-size: 14px;
+        border-radius: 10px;
+    }
+    
+    .notification-area .alert ul {
+        padding-left: 15px;
+    }
+}
     </style>
 </head>
 <body>
@@ -845,7 +936,6 @@
             <li><a href="{{route('admin.service.index')}}"><i class="fas fa-briefcase"></i> Services</a></li>
             <li><a href="{{route('admin.listes.Admin')}}"><i class="fas fa-user-tie"></i> Administrations</a></li>
             <li><a href="{{route('users.affectation.agent')}}"><i class="fas fa-exchange-alt"></i><span> Stages / Affectations</span></a></li>
-            <li><a href="#"><i class="fas fa-chart-bar"></i> Rapports</a></li>
         </ul>
     </div>
 
@@ -870,6 +960,81 @@
                 </div>
             </div>
         </header>
+
+
+        <!-- Header -->
+<header class="main-header">
+    <div class="header-left">
+        <h1><i class="fas fa-university"></i> Gestion des Administrateurs</h1>
+        <p>Administration des comptes administrateurs</p>
+    </div>
+    <div class="header-right">
+        <div class="search-box">
+            <i class="fas fa-search"></i>
+            <input type="text" id="searchInput" placeholder="Rechercher un administrateur...">
+        </div>
+    </div>
+</header>
+<!-- ZONE DE NOTIFICATIONS -->
+<div class="notification-area" id="notificationArea">
+    @if(session('success'))
+        <div class="custom-alert success">
+            <div class="alert-icon">
+                <i class="fas fa-check-circle"></i>
+            </div>
+            <div class="alert-content">
+                <strong>Succès !</strong>
+                <p>{{ session('success') }}</p>
+            </div>
+            <button type="button" class="btn-close" onclick="this.parentElement.remove();">&times;</button>
+        </div>
+    @endif
+
+    @if(session('error'))
+        <div class="custom-alert error">
+            <div class="alert-icon">
+                <i class="fas fa-exclamation-circle"></i>
+            </div>
+            <div class="alert-content">
+                <strong>Erreur !</strong>
+                <p>{{ session('error') }}</p>
+            </div>
+            <button type="button" class="btn-close" onclick="this.parentElement.remove();">&times;</button>
+        </div>
+    @endif
+
+    @if($errors->any())
+        <div class="custom-alert warning">
+            <div class="alert-icon">
+                <i class="fas fa-exclamation-triangle"></i>
+            </div>
+            <div class="alert-content">
+                <strong>Veuillez corriger les erreurs suivantes :</strong>
+                <ul>
+                    @foreach($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+            <button type="button" class="btn-close" onclick="this.parentElement.remove();">&times;</button>
+        </div>
+    @endif
+    
+    @if(session('info'))
+        <div class="custom-alert info">
+            <div class="alert-icon">
+                <i class="fas fa-info-circle"></i>
+            </div>
+            <div class="alert-content">
+                <strong>Information :</strong>
+                <p>{{ session('info') }}</p>
+            </div>
+            <button type="button" class="btn-close" onclick="this.parentElement.remove();">&times;</button>
+        </div>
+    @endif
+</div>
+
+<!-- Script pour fermeture automatique des notifications -->
 
         <!-- Bouton Ajouter -->
         <div style="display: flex; justify-content: flex-end; margin-bottom: 20px;">
@@ -913,9 +1078,7 @@
                                 <a class="btn-action btn-edit" title="Modifier" href="{{ route('users.editAgentStagiare', $stagiare->id) }}">
                                     <i class="fas fa-edit"></i>
                                 </a>
-                                <button class="btn-action btn-delete" title="Supprimer" onclick="confirmDelete({{$stagiare->id}}, '{{$stagiare->name}} {{$stagiare->prenom}}')">
-                                    <i class="fas fa-trash"></i>
-                                </button>
+                                
                             </div>
                         </td>
                     </tr>
@@ -1158,86 +1321,50 @@
             });
         });
 
-        // Messages de notification
-        document.addEventListener('DOMContentLoaded', function() {
-            @if(session('success'))
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Succès !',
-                    text: "{{ session('success') }}",
-                    timer: 3000,
-                    showConfirmButton: false,
-                    toast: true,
-                    position: 'top-end',
-                    timerProgressBar: true
-                });
-            @endif
-
-            @if(session('error'))
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Erreur',
-                    text: "{{ session('error') }}",
-                    confirmButtonColor: '#0B3D2E'
-                });
-            @endif
-            
-            @if($errors->any())
-                Swal.fire({
-                    icon: 'warning',
-                    title: 'Attention',
-                    html: '{!! implode("<br>", $errors->all()) !!}',
-                    confirmButtonColor: '#0B3D2E'
-                });
-            @endif
-        });
-
-        // Validation du formulaire
-        document.getElementById('stagiareForm').addEventListener('submit', function (e) {
-            const password = document.getElementById('password').value;
-            const confirmPassword = document.getElementById('password_confirmation').value;
-
-            if (password.length < 4) {
-                e.preventDefault();
-                Swal.fire({
-                    icon: 'warning',
-                    title: 'Mot de passe trop court',
-                    text: 'Le mot de passe doit contenir au moins 4 caractères',
-                    confirmButtonColor: '#0B3D2E'
-                });
-                return;
-            }
-
-            if (password !== confirmPassword) {
-                e.preventDefault();
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Erreur',
-                    text: 'Les mots de passe ne correspondent pas',
-                    confirmButtonColor: '#0B3D2E'
-                });
-                return;
-            }
-        });
-
-        // Fonction de confirmation de suppression
-        function confirmDelete(id, name) {
-            Swal.fire({
-                title: 'Supprimer cet administrateur ?',
-                text: "Êtes-vous sûr de vouloir supprimer : " + name,
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#dc3545',
-                cancelButtonColor: '#6c757d',
-                confirmButtonText: 'Oui, supprimer',
-                cancelButtonText: 'Annuler',
-                reverseButtons: true
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    window.location.href = "/admin/administrateur/delete/" + id;
+       
+       document.addEventListener('DOMContentLoaded', function() {
+        const notifications = document.querySelectorAll('.custom-alert');
+        
+        notifications.forEach(notification => {
+            // Ajouter une animation de sortie avant suppression
+            setTimeout(() => {
+                if (notification.parentElement) {
+                    notification.style.animation = 'slideOut 0.5s ease forwards';
+                    setTimeout(() => {
+                        notification.remove();
+                    }, 500);
                 }
-            });
+            }, 5000); // 5 secondes
+        });
+    });
+
+    // Animation de sortie
+    const style = document.createElement('style');
+    style.textContent = `
+        @keyframes slideOut {
+            from {
+                opacity: 1;
+                transform: translateX(0);
+            }
+            to {
+                opacity: 0;
+                transform: translateX(100%);
+            }
         }
+    `;
+    document.head.appendChild(style);
+
+     @if($errors->any() || session('error'))
+            // Ouvrir le modal d'ajout
+            var addModal = new bootstrap.Modal(document.getElementById('addStagiareModal'));
+            addModal.show();
+        @endif
+        
+        // Optionnel : Garder le modal ouvert après soumission échouée
+        @if(old('name') || old('prenom') || old('tel') || old('grade'))
+            var addModal = new bootstrap.Modal(document.getElementById('addStagiareModal'));
+            addModal.show();
+        @endif
     </script>
 </body>
 </html>
