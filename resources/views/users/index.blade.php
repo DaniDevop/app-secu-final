@@ -525,6 +525,38 @@ body{
         padding:15px;
     }
 }
+
+/* ===== LOGOUT BUTTON ===== */
+.logout-form {
+    margin-top: 10px;
+}
+
+.logout-btn {
+    width: 100%;
+    background: none;
+    border: none;
+    color: #ff6b6b;
+    padding: 12px 15px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.logout-btn i {
+    width: 20px;
+    text-align: center;
+    font-size: 16px;
+}
+
+.logout-btn:hover {
+    background: #2D6A4F;
+    color: white;
+    transform: translateX(5px);
+}
 </style>
 
 </head>
@@ -553,6 +585,17 @@ body{
             <li><a href="{{route('admin.service.index')}}"><i class="fas fa-briefcase"></i> Services</a></li>
             <li><a href="{{route('admin.listes.Admin')}}"><i class="fas fa-user-tie"></i> Administrations</a></li>
             <li><a href="{{route('users.affectation.agent')}}"><i class="fas fa-exchange-alt"></i> Stages / Affectations</a></li>
+            <li class="nav-item mt-auto">
+    <li>
+    <form method="POST" action="{{ route('logout') }}" class="logout-form">
+        @csrf
+        <button type="submit" class="logout-btn">
+            <i class="fas fa-sign-out-alt"></i>
+            Déconnexion
+        </button>
+    </form>
+</li>
+</li>
         </ul>
     </div>
 

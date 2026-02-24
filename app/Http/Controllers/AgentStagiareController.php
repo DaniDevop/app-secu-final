@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\AddAgentStagiareRequest;
 use App\Models\AgentStagiare;
 use App\Models\ServiceAgent;
 use Illuminate\Http\Request;
@@ -37,25 +38,10 @@ $stagiares = AgentStagiare::get();
 
     
 
-public function addAgentStagiare(Request $request)
+public function addAgentStagiare(AddAgentStagiareRequest $request)
 {
-    $validated = $request->validate([
-        'name'       => 'required|string|max:255',
-        'prenom'     => 'required|string|max:255',
-        'tel'        => 'required|unique:agent_stagiares,tel',
-        'service_id' => 'required|exists:service_agents,id',
-        'grade'      => 'required',
-        'matricule'  => 'required|unique:agent_stagiares,matricule'
-    ], [
-        'name.required'      => 'Le nom de famille est obligatoire.',
-        'prenom.required'    => 'Le prénom est obligatoire.',
-        'tel.required'       => 'Le numéro de téléphone est requis.',
-        'tel.unique'         => 'Ce numéro est déjà utilisé.',
-        'matricule.unique'   => 'Ce matricule est déjà enregistré.',
-        'service_id.required'=> 'Veuillez affecter un service.',
-        'service_id.exists'  => 'Le service sélectionné est invalide.',
-    ]);
-
+   
+    $validated = $request->validated();
    $agent = new AgentStagiare(); 
    $agent->name = $validated['name']; 
    $agent->prenom = $validated['prenom']; 
@@ -73,16 +59,19 @@ public function addAgentStagiare(Request $request)
     public function EditAgentStagiareModif(Request $request){
         
       
-        $stagiare= $request->validate([
-            'name'=>'required',
-            'prenom'=>'required',
-            'tel'=>'required',
-            'service_id' => 'required',
-            'grade'=>'required',
-            'matricule'=>'required',
-            'id'=>'required'
-        ]); 
-       
+        $stagiare = $request->validate([
+        'id'        => 'required|exists:agent_stagiares,id',
+        'name'      => 'required|string|max:255',
+        'prenom'    => 'required|string|max:255',
+        'tel'       => 'required|unique:agent_stagiares,tel,' . $request->id,
+        'service_id'=> 'required|exists:service_agents,id',
+        'grade'     => 'required',
+        'matricule' => 'required|unique:agent_stagiares,matricule,' . $request->id
+    ],[
+        'matricule.unique' => 'Ce matricule est déjà utilisé par un autre agent.',
+        'tel.unique'       => 'Ce numéro est déjà attribué.',
+    ]);
+
          if(!$stagiare){
 
         return back()->with('error',' Informations introuvable  !');

@@ -670,6 +670,15 @@ tr:hover .avatar-circle {
             <li><a href="{{route('admin.service.index')}}"><i class="fas fa-briefcase"></i><span> Services</span></a></li>
             <li><a href="{{route('admin.listes.Admin')}}"><i class="fas fa-users-cog"></i><span> Administrations</span></a></li>
             <li><a href="{{route('users.affectation.agent')}}"><i class="fas fa-exchange-alt"></i><span> Stages / Affectations</span></a></li>
+            <li class="nav-item mt-auto">
+    <form method="POST" action="{{ route('logout') }}">
+        @csrf
+        <button type="submit" class="nav-link btn btn-link text-start w-100 text-danger">
+            <i class="fas fa-sign-out-alt me-2"></i>
+            Déconnexion
+        </button>
+    </form>
+</li>
         </ul>
     </div>
     <div class="sidebar-footer">Application interne sécurisée</div>
@@ -687,6 +696,20 @@ tr:hover .avatar-circle {
         <input type="text" id="searchInput" placeholder="Rechercher...">
     </div>
 </header>
+
+
+@if($errors->any())
+    <div style="background:red;color:white;padding:10px;">
+        {{ implode('', $errors->all()) }}
+    </div>
+@endif
+
+@if(session('success'))
+    <div class="alert alert-success alert-dismissible fade show">
+        {{ session('success') }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+@endif
 
 <div class="d-flex justify-content-between mb-3">
     <div id="exportButtonsContainer"></div>
@@ -893,33 +916,7 @@ $(document).ready(function() {
         }
     });
 
-    // Success message
-    @if(session('success'))
-    Toastify({
-  text: "This is a toast",
-  duration: 3000,
-  destination: "https://github.com/apvarun/toastify-js",
-  newWindow: true,
-  close: true,
-  gravity: "top", // `top` or `bottom`
-  position: "left", // `left`, `center` or `right`
-  stopOnFocus: true, // Prevents dismissing of toast on hover
-  style: {
-    background: "linear-gradient(to right, #00b09b, #96c93d)",
-  },
-  onClick: function(){} // Callback after click
-}).showToast();
-    @endif
-
-    // Error messages
-    @if(session('error'))
-    Swal.fire({ 
-        icon: 'error', 
-        title: 'Erreur', 
-        text: "{{ session('error') }}",
-        confirmButtonColor: '#0B3D2E'
-    });
-    @endif
+    
 
    
 
@@ -939,10 +936,7 @@ $(document).ready(function() {
         }
     });
 
-    // Auto-open modal if there are validation errors
-    @if($errors->any())
-        $('#editAffectationModal').modal('show');
-    @endif
+    
 });
 
 // Keep the changeStatus function for compatibility (though not used in this view)

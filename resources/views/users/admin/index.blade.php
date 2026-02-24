@@ -936,6 +936,15 @@
             <li><a href="{{route('admin.service.index')}}"><i class="fas fa-briefcase"></i> Services</a></li>
             <li><a href="{{route('admin.listes.Admin')}}"><i class="fas fa-user-tie"></i> Administrations</a></li>
             <li><a href="{{route('users.affectation.agent')}}"><i class="fas fa-exchange-alt"></i><span> Stages / Affectations</span></a></li>
+            <li class="nav-item mt-auto">
+    <form method="POST" action="{{ route('logout') }}">
+        @csrf
+        <button type="submit" class="nav-link btn btn-link text-start w-100 text-danger">
+            <i class="fas fa-sign-out-alt me-2"></i>
+            Déconnexion
+        </button>
+    </form>
+</li>
         </ul>
     </div>
 

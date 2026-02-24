@@ -618,8 +618,15 @@ body {
             <li><a href="{{route('admin.service.index')}}"><i class="fas fa-briefcase"></i><span> Services</span></a></li>
             <li><a href="{{route('admin.listes.Admin')}}"><i class="fas fa-users-cog"></i><span> Administrations</span></a></li>
             <li><a href="{{route('users.affectation.agent')}}"><i class="fas fa-exchange-alt"></i><span> Stages / Affectations</span></a></li>
-            <li><a href="#" class="active"><i class="fas fa-chart-bar"></i><span> Rapports</span></a></li>
-        </ul>
+<li class="nav-item mt-auto">
+    <form method="POST" action="{{ route('logout') }}">
+        @csrf
+        <button type="submit" class="nav-link btn btn-link text-start w-100 text-danger">
+            <i class="fas fa-sign-out-alt me-2"></i>
+            Déconnexion
+        </button>
+    </form>
+</li>        </ul>
     </div>
 
     <div class="sidebar-footer">
@@ -633,7 +640,18 @@ body {
     <p>Administration Pénitentiaire – République Gabonaise</p>
 </div>
 
-<!-- DOSSIER -->
+<!-- DOSSIER -->@if($errors->any())
+    <div style="background:red;color:white;padding:10px;">
+        {{ implode('', $errors->all()) }}
+    </div>
+@endif
+
+@if(session('success'))
+    <div class="alert alert-success alert-dismissible fade show">
+        {{ session('success') }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+@endif
 <div class="dossier-card">
 
     <div class="dossier-grid">

@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\AddAffectationRequest;
+use App\Http\Requests\EditAffectationRequest;
 use App\Models\AffectationAgent;
 use App\Models\AffectionAgent;
 use App\Models\AgentStagiare;
@@ -34,31 +36,10 @@ class AffectationController extends Controller
        return view('users.affectation.edit',compact('affect','agentAll','ecoleStageAll'));
      }
 
-    public function addAffectation(Request $request)
+    public function addAffectation(AddAffectationRequest $request)
 {
-    $validated = $request->validate([
-        'agent_stagiare_id' => 'required|exists:agent_stagiares,id',
-        'ecole_stage_id'    => 'required|exists:ecole_stages,id',
-        'date_debut'        => 'required|date',
-        'date_fin'          => 'required|date|after:date_debut',
-        'type_formations'   => 'required|string|max:255'
-    ], [
-        'agent_stagiare_id.required' => 'Veuillez sélectionner un agent stagiaire.',
-        'agent_stagiare_id.exists'   => 'L’agent sélectionné est invalide.',
-
-        'ecole_stage_id.required'    => 'Veuillez sélectionner une école.',
-        'ecole_stage_id.exists'      => 'L’école sélectionnée est invalide.',
-
-        'date_debut.required'        => 'La date de début est obligatoire.',
-        'date_debut.date'            => 'La date de début doit être valide.',
-
-        'date_fin.required'          => 'La date de fin est obligatoire.',
-        'date_fin.date'              => 'La date de fin doit être valide.',
-        'date_fin.after'             => 'La date de fin doit être postérieure à la date de début.',
-
-        'type_formations.required'   => 'Le type de formation est obligatoire.'
-    ]);
-
+    
+    $validated = $request->validated();
     $affectation = new AffectionAgent();
     $affectation->agent_stagiare_id = $validated['agent_stagiare_id'];
     $affectation->ecole_stage_id    = $validated['ecole_stage_id'];
@@ -74,22 +55,14 @@ class AffectationController extends Controller
 
 
 
-     public function EditAffectationAgent(Request $request){
+     public function EditAffectationAgent(EditAffectationRequest $request){
           //dd($request->all());
-      $data=$request->validate([
-           'agent_stagiare_id'=>'required',
-           'ecole_stage_id'=>'required',
-           'date_debut'=>'required',
-            'date_fin'=>'required',
-            'type_formations'=>'required',
-            'affectation_id'=>'required'
-
-      ]);
+      
           
       $affectation=AffectionAgent::find($request->affectation_id);
       if(!$affectation){
         
-        return back();
+        return back()->with('error','Affectation introuvable !');
       }
       
       $affectation->agent_stagiare_id=$request->agent_stagiare_id;
@@ -98,8 +71,7 @@ class AffectationController extends Controller
     $affectation->type_formations=$request->type_formations;
     $affectation->date_fin=$request->date_fin;
       $affectation->save();
-      //toastr()->success('Information modifié avec success !');
-      return back();
+      return back()->with('success','Affectation modifiée avec succès !');
 
     }
 }

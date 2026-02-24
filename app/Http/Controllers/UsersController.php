@@ -61,8 +61,13 @@ class UsersController extends Controller
          $request->validate([
              'name'=>'required',
              'prenom'=>'required',
-             'tel'=>'required',
+             'tel'=>'required|unique:users,tel',
              'grade'=>'required',
+         ],[
+                'name.required'=>'Le nom de famille est obligatoire.',
+                'prenom.required'=>'Le prénom est obligatoire.',
+                'tel.required'=>'Le numéro de téléphone est requis.',
+                'grade.required'=>'Le grade est requis.',   
          ]);
 
          $admin=new User();
