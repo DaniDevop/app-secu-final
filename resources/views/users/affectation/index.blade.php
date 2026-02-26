@@ -798,7 +798,7 @@ tr:hover .avatar-circle {
             <li><a href="{{route('admin.service.index')}}"><i class="fas fa-briefcase"></i><span> Services</span></a></li>
             <li><a href="{{route('admin.listes.Admin')}}"><i class="fas fa-users-cog"></i><span> Administrations</span></a></li>
             <li><a href="{{route('users.affectation.agent')}}"><i class="fas fa-exchange-alt"></i><span> Stages / Affectations</span></a></li>
-            <li class="nav-item mt-auto">
+                <li class="nav-item mt-auto">
     <form method="POST" action="{{ route('logout') }}">
         @csrf
         <button type="submit" class="nav-link btn btn-link text-start w-100 text-danger">
@@ -857,7 +857,7 @@ tr:hover .avatar-circle {
                 <th><i class="fas fa-calendar me-1"></i>Période</th>
                 <th><i class="fas fa-tag me-1"></i>Formations</th>
                 <th><i class="fas fa-tag me-1"></i>Statut</th>
-                <th class="no-export"><i class="fas fa-cog me-1"></i>Actions</th>
+                <th class="no-export"><i class="fas fa-cog me-1"></i>Details</th>
             </tr>
         </thead>
         <tbody>
@@ -897,16 +897,9 @@ tr:hover .avatar-circle {
                         <a href="{{ route('users.editAffectationt.agent', $affect->id) }}" class="btn btn-outline-primary btn-sm" title="Modifier">
                             <i class="fas fa-edit"></i>
                         </a>
-                        @if($st!=='terminé' && $st!=='termine')
-                        <button onclick="changeStatus({{ $affect->id }},'Terminé')" class="btn btn-outline-success btn-sm" title="Marquer comme terminé">
-                            <i class="fas fa-check"></i>
-                        </button>
-                        @endif
-                        @if($st!=='annulé' && $st!=='annule')
-                        <button onclick="changeStatus({{ $affect->id }},'Annulé')" class="btn btn-outline-danger btn-sm" title="Annuler">
-                            <i class="fas fa-times"></i>
-                        </button>
-                        @endif
+                       
+                      
+                       
                     </div>
                 </td>
             </tr>

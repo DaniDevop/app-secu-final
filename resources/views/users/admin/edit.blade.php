@@ -1,238 +1,880 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gestion des Écoles - ASP Stages</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/dataTables.bootstrap5.min.css">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
-        @include('users.ecole.style')
-        
-        <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-        <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
-        <script src="https://cdn.datatables.net/1.13.7/js/dataTables.bootstrap5.min.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5, user-scalable=yes">
+<title>Modification Affectation - ASP Stages</title>
+
+<!-- CSS externes -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/dataTables.bootstrap5.min.css">
+<link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.4.2/css/buttons.bootstrap5.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+<style>
+/* ================== THEME ================== */
+:root {
+    --primary: #0B3D2E;
+    --primary-light: #1F6F5C;
+    --gold: #D4AF37;
+    --bg: #F1F4F8;
+    --card: #ffffff;
+    --text: #1f2937;
+    --gray: #6b7280;
+    --sidebar-width: 260px;
+    --sidebar-width-mobile: 70px;
+}
+
+/* ================== GLOBAL ================== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background: var(--bg);
+    font-family: 'Segoe UI', sans-serif;
+    margin: 0;
+    padding-left: var(--sidebar-width);
+    transition: padding-left 0.3s ease;
+    min-height: 100vh;
+    overflow-x: hidden;
+}
+
+/* ================== SIDEBAR ================== */
+.sidebar {
+    width: var(--sidebar-width);
+    background: linear-gradient(180deg, #081C15, #1B4332);
+    color: white;
+    padding: 30px 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    box-shadow: 5px 0 30px rgba(0,0,0,0.2);
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100%;
+    z-index: 1000;
+    transition: all 0.3s ease;
+    overflow-y: auto;
+}
+
+.logo { 
+    text-align: center; 
+    margin-bottom: 40px; 
+}
+
+.logo h2 { 
+    color: var(--gold); 
+    font-size: 18px; 
+    letter-spacing: 2px;
+    word-break: break-word;
+}
+
+.menu { 
+    list-style: none; 
+    padding: 0; 
+}
+
+.menu li { 
+    margin: 8px 0; 
+}
+
+.menu a {
+    text-decoration: none;
+    color: white;
+    padding: 12px 15px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    transition: all 0.3s;
+    font-size: 15px;
+    white-space: nowrap;
+}
+
+.menu a i {
+    font-size: 18px;
+    width: 24px;
+    text-align: center;
+}
+
+.menu a:hover, 
+.menu a.active { 
+    background: #2D6A4F; 
+    transform: translateX(5px); 
+}
+
+.sidebar-footer { 
+    font-size: 12px; 
+    text-align: center; 
+    opacity: .7;
+    margin-top: 20px;
+}
+
+/* Menu toggle button for mobile */
+.menu-toggle {
+    display: none;
+    position: fixed;
+    top: 15px;
+    left: 15px;
+    z-index: 1001;
+    background: var(--primary);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 45px;
+    height: 45px;
+    font-size: 20px;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    align-items: center;
+    justify-content: center;
+}
+
+/* ================== MAIN CONTENT ================== */
+.main-content { 
+    padding: 30px 40px; 
+    transition: all 0.3s ease;
+    width: 100%;
+    min-height: 100vh;
+}
+
+/* ================== HEADER ================== */
+.main-header {
+    background: linear-gradient(135deg, var(--primary), var(--primary-light));
+    color: white;
+    padding: 25px 30px;
+    border-radius: 20px;
+    margin-bottom: 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.main-header h1 { 
+    font-size: clamp(20px, 4vw, 24px); 
+    font-weight: 600; 
+    display: flex; 
+    align-items: center; 
+    gap: 10px; 
+    margin: 0;
+}
+
+.main-header p { 
+    margin: 5px 0 0 0; 
+    opacity: .8; 
+    font-size: clamp(13px, 3vw, 14px);
+}
+
+.header-text {
+    flex: 1;
+    min-width: 250px;
+}
+
+/* ================== SEARCH BOX ================== */
+.search-box { 
+    position: relative; 
+    min-width: 200px;
+}
+
+.search-box i {
+    position: absolute; 
+    top: 50%; 
+    left: 15px; 
+    transform: translateY(-50%);
+    color: var(--gray);
+    font-size: 14px;
+    z-index: 1;
+}
+
+.search-box input {
+    padding: 12px 15px 12px 40px;
+    border-radius: 30px;
+    border: 1px solid rgba(255,255,255,0.2);
+    width: 100%;
+    min-width: 250px;
+    background: rgba(255,255,255,0.15);
+    color: white;
+    transition: all 0.3s;
+}
+
+.search-box input::placeholder {
+    color: rgba(255,255,255,0.7);
+}
+
+.search-box input:focus {
+    background: rgba(255,255,255,0.25);
+    outline: none;
+    border-color: white;
+}
+
+/* ================== BUTTON ================== */
+.btn-add {
+    background: var(--primary);
+    color: white;
+    border-radius: 30px;
+    padding: 12px 25px;
+    font-weight: 600;
+    transition: all 0.3s;
+    border: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 15px;
+    white-space: nowrap;
+    cursor: pointer;
+}
+
+.btn-add:hover { 
+    background: var(--primary-light); 
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(11, 61, 46, 0.3);
+}
+
+/* Export button customization */
+.btn-export-excel {
+    background: #28a745 !important;
+    color: white !important;
+    border-radius: 30px !important;
+    padding: 12px 25px !important;
+    font-weight: 600 !important;
+    border: none !important;
+    transition: all 0.3s !important;
+}
+
+.btn-export-excel:hover {
+    background: #218838 !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 5px 15px rgba(40, 167, 69, 0.3) !important;
+}
+
+/* ================== TABLE ================== */
+.table-container {
+    background: var(--card);
+    border-radius: 20px;
+    padding: 25px;
+    overflow-x: auto;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+    margin-bottom: 20px;
+    -webkit-overflow-scrolling: touch;
+}
+
+.table {
+    width: 100%;
+    margin-bottom: 0;
+    min-width: 800px; /* Table large nécessite scroll */
+}
+
+.table th, .table td { 
+    vertical-align: middle !important;
+    padding: 15px 12px;
+}
+
+.table th {
+    background: #f8f9fa;
+    font-weight: 600;
+    color: var(--primary);
+    white-space: nowrap;
+}
+
+.table td {
+    word-break: break-word;
+    font-size: 14px;
+}
+
+/* Avatar circle */
+.avatar-circle {
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    background: #f0f2f5;
+    color: var(--primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s;
+}
+
+tr:hover .avatar-circle {
+    background: var(--primary);
+    color: white;
+}
+
+/* ================== EXPORT BUTTONS CONTAINER ================== */
+#exportButtonsContainer {
+    display: inline-block;
+}
+
+.dt-buttons {
+    display: inline-block;
+}
+
+/* ================== MODAL ================== */
+.asp-modal .modal-content {
+    border-radius: 20px;
+    border: none;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    overflow: hidden;
+}
+
+.asp-modal .modal-header {
+    background: linear-gradient(135deg, var(--primary), var(--primary-light));
+    color: white;
+    border-top-left-radius: 20px;
+    border-top-right-radius: 20px;
+    padding: 20px 25px;
+}
+
+.asp-modal .modal-header .btn-close {
+    filter: brightness(0) invert(1);
+    opacity: 0.8;
+}
+
+.asp-modal .modal-header .btn-close:hover {
+    opacity: 1;
+}
+
+.asp-modal .modal-body {
+    padding: 25px;
+}
+
+.asp-modal .form-control,
+.asp-modal .form-select { 
+    border-radius: 12px; 
+    padding: 12px 15px; 
+    border: 2px solid #e9ecef;
+    transition: all 0.3s;
+    font-size: 15px;
+}
+
+.asp-modal .form-control:focus,
+.asp-modal .form-select:focus {
+    border-color: var(--gold);
+    box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.2);
+    outline: none;
+}
+
+.asp-modal .form-label {
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 8px;
+    font-size: 14px;
+}
+
+.asp-modal .modal-footer { 
+    border-top: none; 
+    padding: 20px 25px;
+    background: #f8f9fa;
+}
+
+/* ================== MEDIA QUERIES ================== */
+@media screen and (max-width: 992px) {
+    body {
+        padding-left: var(--sidebar-width-mobile);
+    }
     
+    .sidebar {
+        width: var(--sidebar-width-mobile);
+        padding: 20px 10px;
+    }
+    
+    .logo h2 {
+        font-size: 12px;
+        white-space: normal;
+        word-break: break-word;
+    }
+    
+    .menu a span {
+        display: none;
+    }
+    
+    .menu a {
+        justify-content: center;
+        padding: 12px;
+    }
+    
+    .menu a i {
+        font-size: 20px;
+        margin: 0;
+        width: auto;
+    }
+    
+    .sidebar-footer {
+        font-size: 10px;
+        writing-mode: vertical-rl;
+        transform: rotate(180deg);
+        white-space: nowrap;
+        height: auto;
+        align-self: center;
+    }
+    
+    .main-header {
+        padding: 20px;
+    }
+    
+    .search-box {
+        width: 100%;
+    }
+    
+    .search-box input {
+        width: 100%;
+    }
+    
+    .main-content {
+        padding: 20px 15px;
+    }
+}
+
+@media screen and (max-width: 768px) {
+    .menu-toggle {
+        display: flex;
+    }
+    
+    body {
+        padding-left: 0;
+    }
+    
+    .sidebar {
+        transform: translateX(-100%);
+        width: 260px;
+        padding: 30px 20px;
+    }
+    
+    .sidebar.active {
+        transform: translateX(0);
+    }
+    
+    .sidebar .menu a span {
+        display: inline;
+    }
+    
+    .sidebar .menu a {
+        justify-content: flex-start;
+    }
+    
+    .sidebar .logo h2 {
+        font-size: 16px;
+    }
+    
+    .sidebar-footer {
+        writing-mode: horizontal-tb;
+        transform: none;
+    }
+    
+    .main-header {
+        margin-top: 50px;
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .d-flex.justify-content-between {
+        flex-direction: column;
+        gap: 15px;
+        align-items: stretch !important;
+    }
+    
+    #exportButtonsContainer {
+        width: 100%;
+    }
+    
+    .btn-export-excel {
+        width: 100%;
+        justify-content: center;
+    }
+    
+    .btn-add {
+        width: 100%;
+        justify-content: center;
+    }
+    
+    .table-container {
+        padding: 20px;
+        border-radius: 15px;
+    }
+    
+    .table th, 
+    .table td {
+        padding: 12px 8px;
+        font-size: 13px;
+    }
+    
+    .avatar-circle {
+        width: 30px;
+        height: 30px;
+    }
+    
+    .modal-dialog {
+        margin: 10px;
+    }
+    
+    .modal-body {
+        padding: 20px;
+    }
+    
+    .modal-body .row {
+        margin: 0;
+    }
+    
+    .modal-body .col-md-6 {
+        padding: 0 5px;
+    }
+    
+    .modal-footer {
+        flex-direction: column-reverse;
+        gap: 10px;
+    }
+    
+    .modal-footer button {
+        width: 100%;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    .main-header {
+        padding: 15px;
+    }
+    
+    .main-header h1 {
+        font-size: 20px;
+    }
+    
+    .main-header p {
+        font-size: 12px;
+    }
+    
+    .main-content {
+        padding: 15px 10px;
+    }
+    
+    .table-container {
+        padding: 15px;
+    }
+    
+    .table th, 
+    .table td {
+        padding: 10px 6px;
+        font-size: 12px;
+    }
+    
+    .avatar-circle {
+        width: 25px;
+        height: 25px;
+        margin-right: 5px !important;
+    }
+    
+    .avatar-circle i {
+        font-size: 12px;
+    }
+    
+    .modal-header {
+        padding: 15px 20px;
+    }
+    
+    .modal-header h5 {
+        font-size: 16px;
+    }
+    
+    .modal-body {
+        padding: 15px;
+    }
+    
+    .form-control,
+    .form-select {
+        padding: 10px 12px;
+        font-size: 14px;
+    }
+    
+    .modal-footer {
+        padding: 15px;
+    }
+}
+
+@media screen and (min-width: 1400px) {
+    .main-content {
+        max-width: 1600px;
+        margin: 0 auto;
+    }
+}
+
+/* ================== ANIMATIONS ================== */
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.main-content {
+    animation: slideIn 0.5s ease;
+}
+
+/* ================== SCROLLBAR ================== */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--primary);
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--primary-light);
+}
+
+/* ================== TOUCH OPTIMIZATION ================== */
+@media (hover: none) and (pointer: coarse) {
+    .menu a,
+    .btn-add,
+    .btn-export-excel {
+        padding: 15px 20px;
+        font-size: 16px;
+    }
+    
+    .table td {
+        padding: 15px 10px;
+    }
+}
+</style>
 </head>
 <body>
-   
 
-    <div class="mobile-toggle" id="mobileToggle">
-        <i class="fas fa-bars"></i>
-    </div>
-
-    <!-- Sidebar -->
-    @include('style.sidebar')
-
-    <!-- Contenu principal -->
-    <div class="main-content" id="mainContent">
-        <!-- Header -->
-        <header class="main-header">
-            <div class="header-left">
-                <h1><i class="fas fa-university"></i> Gestion des Stages</h1>
-                <p>Administration de gestions des stages</p>
-            </div>
-            <div class="header-right">
-                <div class="search-box">
-                    <i class="fas fa-search"></i>
-                    <input type="text" id="searchInput" placeholder="Rechercher une école...">
-                </div>
-               
-            </div>
-        </header>
-
-        <!-- Bouton Ajouter -->
-        <div style="display: flex; justify-content: flex-end; margin-bottom: 20px;">
-           <button class="btn-add" id="addSchoolBtn" type="button" data-bs-toggle="modal" data-bs-target="#addStagiareModal">
-    <i class="fas fa-plus-circle"></i>
-    Modifier votre compte
+<!-- Menu toggle button for mobile -->
+<button class="menu-toggle" id="menuToggle">
+    <i class="fas fa-bars"></i>
 </button>
-        </div>
 
-        <!-- Message de notification -->
-        <div class="message" id="notificationMessage"></div>
+<!-- SIDEBAR -->
+<div class="sidebar" id="sidebar">
+    <div>
+        <div class="logo"><h2>SÉCURITÉ<br>PÉNITENTIAIRE</h2></div>
+        <ul class="menu">
+            <li><a href="{{route('admin.dashboard')}}"><i class="fas fa-home"></i><span> Accueil</span></a></li>
+            <li><a href="{{route('users.agent.index')}}"><i class="fas fa-user-shield"></i><span> Agents</span></a></li>
+            <li><a href="{{route('admin.ecole.index')}}"><i class="fas fa-university"></i><span> Écoles</span></a></li>
+            <li><a href="{{route('admin.service.index')}}"><i class="fas fa-briefcase"></i><span> Services</span></a></li>
+            <li><a href="{{route('admin.listes.Admin')}}"><i class="fas fa-users-cog"></i><span> Administrations</span></a></li>
+            <li><a href="{{route('users.affectation.agent')}}"><i class="fas fa-exchange-alt"></i><span> Stages / Affectations</span></a></li>
 
-        <!-- Tableau des écoles -->
-       <div class="table-container">
-<table id="schoolsTable" class="table table-hover w-100">
-            <thead>
+            <li class="nav-item mt-auto">
+    <form method="POST" action="{{ route('logout') }}">
+        @csrf
+        <button type="submit" class="nav-link btn btn-link text-start w-100 text-danger">
+            <i class="fas fa-sign-out-alt me-2"></i>
+            Déconnexion
+        </button>
+    </form>
+</li>
+        </ul>
+    </div>
+    <div class="sidebar-footer">Application interne sécurisée</div>
+</div>
+
+<div class="main-content">
+
+<header class="main-header">
+    <div class="header-text">
+        <h1><i class="fas fa-clipboard-list"></i> Modification d'Affectation</h1>
+        <p>Modifier les détails de l'affectation</p>
+    </div>
+    <div class="search-box">
+        <i class="fas fa-search"></i>
+        <input type="text" id="searchInput" placeholder="Rechercher...">
+    </div>
+</header>
+
+
+@if($errors->any())
+    <div style="background:red;color:white;padding:10px;">
+        {{ implode('', $errors->all()) }}
+    </div>
+@endif
+
+@if(session('success'))
+    <div class="alert alert-success alert-dismissible fade show">
+        {{ session('success') }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+@endif
+
+
+
+<div class="table-container">
+    <table id="schoolsTable" class="table table-hover align-middle w-100">
+        <thead>
             <tr>
-                <th width="35%">Numéro</th>
-                <th width="50%">Nom </th>
-                <th width="15%">Prenom</th>
-                <th width="15%">Grade</th>
-                <th width="15%">Tel</th>
-                 
-                <th width="15%">Actions</th>
-
+                <th><i class="fas fa-id-card me-1"></i>Nom</th>
+                <th><i class="fas fa-user me-1"></i>Prenom</th>
+                <th><i class="fas fa-briefcase me-1"></i>Email</th>
+                <th><i class="fas fa-university me-1"></i>Grade</th>
+                <th><i class="fas fa-tag me-1"></i>Tel</th>
             </tr>
         </thead>
-       <tbody>
-    
-    <tr>
-        <td>
-            <div class="school-name">
-                <i class="fas fa-id-card" style="margin-right: 10px; color: var(--primary);"></i>
-                {{$user->id}}
-            </div>
-        </td>
-        <td>{{$user->name}}</td>
-        <td>{{$user->prenom}}</td>
-        <td><span class="badge bg-light text-dark">{{$user->grade}}</span></td>
-        <td>{{ $user->tel }}</td> <td>
-            <div class="actions">
-                 
-                
-            </div>
-        </td>
-    </tr>
-</tbody>
+        <tbody>
+            <tr>
+                <td class="text-primary fw-bold"><span class="badge bg-light text-dark p-2">#{{ $admin->name }}</span></td>
+                <td>
+                    <div class="d-flex align-items-center">
+                        <div class="avatar-circle me-2">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <div>
+                            <span class="fw-bold">{{ $admin->prenom }}</span>
+                            <br><small class="text-muted">{{ $admin->email }}</small>
+                        </div>
+                    </div>
+                </td>
+                <td>
+                    <span class="badge bg-light text-dark border mb-1">{{ $admin->grade }}</span>
+                </td>
+                <td>
+                    <span class="badge bg-light text-dark border">{{ $admin->tel }}</span>
+                </td>
+               
+            </tr>
+        </tbody>
     </table>
 </div>
 
-        <!-- Pagination -->
-        <div class="pagination" id="pagination" style="display: none;">
-            <!-- Les boutons de pagination seront générés ici -->
-        </div>
+</div>
 
-        <!-- État vide -->
-        <div class="empty-state" id="emptyState" style="display: none;">
-            <div class="empty-icon">
-                <i class="fas fa-university"></i>
-            </div>
-            <h3>Aucune école enregistrée</h3>
-            <p>Commencez par ajouter votre première école partenaire.</p>
-            <button class="btn-add" id="addFirstSchoolBtn" type="button" data-bs-toggle="modal" data-bs-target="#addSchoolModal">
-                <i class="fas fa-plus-circle"></i>
-                Ajouter une école
-            </button>
-        </div>
-    </div>
-
-    <!-- Modal d'ajout/modification Bootstrap -->
-  <div class="modal fade asp-modal" id="addStagiareModal" tabindex="-1" aria-labelledby="addStagiareModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-lg">
+<!-- Modal Modification Affectation -->
+<div class="modal fade asp-modal" id="editAffectationModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="addStagiareModalLabel">
-                    <i class="fas fa-user-graduate"></i> Ajouter un admin
-                </h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <h5 class="modal-title"><i class="fas fa-edit me-2"></i>Modification de l'Affectation</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <form id="stagiareForm" action="{{route('Edit.dAdmin.Account')}}" method="POST">
+            <form action="" method="POST" id="editAffectationForm">
                 @csrf
-                <div class="modal-body">
-                   
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                
-                                
-                                        @error('matricule')
-                        <div class="invalid-feedback d-block">
-                            <i class="fas fa-exclamation-circle"></i> {{ $message }}
-                        </div>
-                    @enderror
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label class="form-label" for="nom">
-                                    <i class="fas fa-user"></i> Nom *
-                                </label>
-                                <input type="text" 
-                                       id="nom" 
-                                       name="name"
-                                       class="form-control"
-                                       value="{{$user->name}}"
-                                       placeholder="Nom "
-                                       required>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label class="form-label" for="prenom">
-                                    <i class="fas fa-user"></i> Prénom *
-                                </label>
-                                <input type="text" 
-                                       id="prenom" 
-                                       name="prenom"
-                                       value="{{$user->prenom}}"
-                                       class="form-control" 
-                                       placeholder="Prénom "
-                                       required>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label class="form-label" for="grade">
-                                    <i class="fas fa-graduation-cap"></i> Grade *
-                                </label>
-                                <select id="grade" name="grade" class="form-control" required>
-                                    <option value="{{$user->grade}}"> {{$user->grade}} </option>
-                                    <option value="caporal">Caporal</option>
-                                    <option value="Caporal-chef">Caporal chef</option>
-                                    <option value="sergent">Sergent</option>
-                                    <option value="sergent-cheft">Sergent chef</option>
-                                    <option value="sergent-chef-major">Sergent chef major</option>
-                                    <option value="Adjudant">Adjudant</option>
-                                     <option value="Adjudant-chef">Adjudant chef</option>
-                                    <option value="Adjudant-chef-major">Adjudant chef major</option>
-                                    <option value="Sous-lieutenant">Sous-lieutenant</option>
-                                    <option value="Lieutenant">Lieutenant</option>
-                                    <option value="Capitaine">Capitaine</option>
-                                    <option value="Commandant">Commandant</option>
-                                    <option value="Lieutenant-colonel">Lieutenant colonel</option>
-                                    <option value="Colonel">Colonel</option>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
+        
+<div class="container mt-4">
+    <div class="row g-4">
 
+        <!-- ================= INFOS ADMIN ================= -->
+        <div class="col-md-6">
+            <div class="card shadow-sm rounded-4">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-user-edit me-2"></i>
+                        Modifier les informations
+                    </h5>
+                </div>
 
+                <div class="card-body">
+                    <form action="" method="POST">
+                        @csrf
+                        @method('PUT')
 
-
-                     <div class="row">
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label class="form-label" for="prenom">
-                                    <i class="fas fa-user"></i> Telephone *
-                                </label>
-                                <input type="text" 
-                                       id="prenom" 
-                                       name="tel"
-                                       class="form-control" 
-                                       placeholder="Phone Ex:06.... "
-                                       value="{{$user->tel}}"
-                                       required>
-                                        @error('tel')
-                        <div class="invalid-feedback d-block">
-                            <i class="fas fa-exclamation-circle"></i> {{ $message }}
+                        <div class="mb-3">
+                            <label class="form-label">Nom</label>
+                            <input type="text" 
+                                   name="name" 
+                                   value="{{ old('name', $admin->name) }}" 
+                                   class="form-control" 
+                                   required>
                         </div>
-                    @enderror
-                            </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Prénom</label>
+                            <input type="text" 
+                                   name="prenom" 
+                                   value="{{ old('prenom', $admin->prenom) }}" 
+                                   class="form-control" 
+                                   required>
                         </div>
-                        
-                    </div>
 
+                        <div class="mb-3">
+                            <label class="form-label">Grade</label>
+                            <input type="text" 
+                                   name="grade" 
+                                   value="{{ old('grade', $admin->grade) }}" 
+                                   class="form-control" 
+                                   required>
+                        </div>
 
-      
+                        <div class="mb-3">
+                            <label class="form-label">Téléphone</label>
+                            <input type="text" 
+                                   name="tel" 
+                                   value="{{ old('tel', $admin->tel) }}" 
+                                   class="form-control" 
+                                   required>
+                        </div>
+
+                        <button type="submit" class="btn btn-success w-100">
+                            Mettre à jour
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= MOT DE PASSE ================= -->
+        <div class="col-md-6">
+            <div class="card shadow-sm rounded-4 border-danger">
+                <div class="card-header bg-danger text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-lock me-2"></i>
+                        Modifier le mot de passe
+                    </h5>
+                </div>
+
+                <div class="card-body">
+                    <form action="" method="POST">
+                        @csrf
+                        @method('PUT')
+
+                        <div class="mb-3">
+                            <label class="form-label">Nouveau mot de passe</label>
+                            <input type="password" 
+                                   name="password" 
+                                   class="form-control"
+                                   required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Confirmation</label>
+                            <input type="password" 
+                                   name="password_confirmation" 
+                                   class="form-control"
+                                   required>
+                        </div>
+
+                        <button type="submit" class="btn btn-danger w-100">
+                            Mettre à jour le mot de passe
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+    </div>
 </div>
-              <input type="hidden" name="id" value="{{$user->id}}">
 
-                
+
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-cancel" data-bs-dismiss="modal">
-                        Annuler
+                    <button type="button" class="btn btn-secondary px-4" data-bs-dismiss="modal">
+                        <i class="fas fa-times me-1"></i> Annuler
                     </button>
-                    <button type="submit" class="btn btn-submit" id="submitBtn">
-                        Enregistrer
+                    <button type="submit" class="btn btn-primary px-4 shadow">
+                        <i class="fas fa-save me-1"></i> Enregistrer les modifications
                     </button>
                 </div>
             </form>
@@ -240,133 +882,118 @@
     </div>
 </div>
 
-    <!-- Modal de confirmation de suppression -->
-    <div class="modal fade delete-modal" id="deleteSchoolModal" tabindex="-1" aria-labelledby="deleteSchoolModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="deleteSchoolModalLabel">
-                        <i class="fas fa-exclamation-triangle"></i> Confirmation    
-                    </h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <p>Êtes-vous sûr de vouloir supprimer cette école ?</p>
-                    <div class="school-name" id="schoolToDeleteName"></div>
-                    <p style="font-size: 14px; color: var(--gray-600); margin-top: 10px;">
-                        Cette action est irréversible.
-                    </p>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-cancel" data-bs-dismiss="modal">
-                        Annuler
-                    </button>
-                    <button type="button" class="btn btn-delete" id="confirmDeleteBtn">
-                        Supprimer
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
 
-    <script>
-       
 
-        // Fonction pour afficher le modal d'ajout
-        function showAddModal() {
-            addSchoolModalLabel.innerHTML = '<i class="fas fa-university"></i> Ajouter une école';
-            schoolForm.reset();
-            schoolIdInput.value = '';
-            editingSchoolId = null;
-            document.getElementById('schoolName').focus();
-            addSchoolModal.show();
-        }
 
-    
 
-       $(document).ready(function() {
-    // Initialisation de DataTable
+<!-- Scripts -->
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.7/js/dataTables.bootstrap5.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.4.2/js/dataTables.buttons.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.bootstrap5.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.html5.min.js"></script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+<script>
+$(document).ready(function() {
+    // Initialize DataTable
     var table = $('#schoolsTable').DataTable({
-        "language": {
-            "url": "//cdn.datatables.net/plug-ins/1.13.7/i18n/fr-FR.json"
+        language: { 
+            url: "//cdn.datatables.net/plug-ins/1.13.7/i18n/fr-FR.json",
+            search: "",
+            searchPlaceholder: "Rechercher..."
         },
-        "dom": 'rtip', // Cache la barre de recherche par défaut de DT pour utiliser la vôtre
-        "pageLength": 10,
-        "ordering": true,
-        "responsive": true,
-        "paginate":false
+        dom: 'Brtip',
+        buttons: [{
+            extend: 'excelHtml5',
+            }
+        }],
+        pageLength: 10,
+        responsive: true,
+        paging: false,
+        ordering: true,
+        lengthChange: false,
+        info: false,
+        searching: true
     });
-
-    // Liaison de votre input de recherche personnalisé
+    
+    // Move export buttons to container
+    table.buttons().container().appendTo('#exportButtonsContainer');
+    
+    // Custom search
     $('#searchInput').on('keyup', function() {
         table.search(this.value).draw();
     });
-});
 
-
-
-       document.addEventListener('DOMContentLoaded', function() {
-        @if(session('success'))
-            Swal.fire({
-                icon: 'success',
-                title: 'Succès !',
-                text: "{{ session('success') }}",
-                timer: 3000,
-                showConfirmButton: false,
-                toast: true,
-                position: 'top-end'
-            });
-        @endif
-
-        @if(session('error'))
-            Swal.fire({
-                icon: 'error',
-                title: 'Erreur',
-                text: "{{ session('error') }}",
-                confirmButtonColor: '#0c2461'
-            });
-        @endif
-        
-        // Affichage des erreurs de validation (ex: nom_ecole requis)
-        @if($errors->any())
-            Swal.fire({
-                icon: 'warning',
-                title: 'Attention',
-                html: '{!! implode("<br>", $errors->all()) !!}',
-                confirmButtonColor: '#0c2461'
-            });
-        @endif
+    // Mobile menu toggle
+    $('#menuToggle').click(function() {
+        $('#sidebar').toggleClass('active');
+        $(this).find('i').toggleClass('fa-bars fa-times');
     });
 
-    document.getElementById('stagiareForm').addEventListener('submit', function (e) {
-    const password = document.getElementById('password').value;
-    const confirmPassword = document.getElementById('password_confirmation').value;
+    // Close sidebar when clicking outside on mobile
+    $(document).on('click', function(e) {
+        if ($(window).width() <= 768) {
+            if (!$(e.target).closest('#sidebar').length && !$(e.target).closest('#menuToggle').length) {
+                $('#sidebar').removeClass('active');
+                $('#menuToggle i').removeClass('fa-times').addClass('fa-bars');
+            }
+        }
+    });
 
-    // Vérification longueur minimale
-    if (password.length < 4) {
-        e.preventDefault();
-        Swal.fire({
-            icon: 'warning',
-            title: 'Mot de passe trop court',
-            text: 'Le mot de passe doit contenir au moins 4 caractères'
-        });
-        return;
-    }
+    // Handle window resize
+    $(window).on('resize', function() {
+        if ($(window).width() > 768) {
+            $('#sidebar').removeClass('active');
+            $('#menuToggle i').removeClass('fa-times').addClass('fa-bars');
+        }
+    });
 
-    // Vérification correspondance
-    if (password !== confirmPassword) {
-        e.preventDefault();
-        Swal.fire({
-            icon: 'error',
-            title: 'Erreur',
-            text: 'Les mots de passe ne correspondent pas'
-        });
-        return;
-    }
+    
+
+   
+
+    // Form validation
+    $('#editAffectationForm').on('submit', function(e) {
+        let dateDebut = $('input[name="date_debut"]').val();
+        let dateFin = $('input[name="date_fin"]').val();
+        
+        if (new Date(dateFin) < new Date(dateDebut)) {
+            e.preventDefault();
+            Swal.fire({
+                icon: 'error',
+                title: 'Dates invalides',
+                text: 'La date de fin doit être postérieure à la date de début.',
+                confirmButtonColor: '#0B3D2E'
+            });
+        }
+    });
+
+    
 });
-    </script>
 
-
+// Keep the changeStatus function for compatibility (though not used in this view)
+function changeStatus(id, newStatus) {
+    Swal.fire({
+        title: 'Modifier le statut ?',
+        text: "L'affectation passera au statut : " + newStatus,
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonColor: '#0B3D2E',
+        cancelButtonColor: '#6c757d',
+        confirmButtonText: 'Oui, confirmer',
+        cancelButtonText: 'Annuler',
+        reverseButtons: true
+    }).then((result) => {
+        if(result.isConfirmed) {
+            window.location.href = "/administration/affectation/status/" + id + "/" + newStatus;
+        }
+    });
+}
+</script>
 
 </body>
 </html>

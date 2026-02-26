@@ -4,17 +4,19 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\AddAffectationRequest;
 use App\Http\Requests\EditAffectationRequest;
+use App\Http\Requests\HistoriqueStagRequest;
 use App\Models\AffectationAgent;
 use App\Models\AffectionAgent;
 use App\Models\AgentStagiare;
 use App\Models\EcoleStage;
+use App\Models\historique_stageAgent;
 use Illuminate\Http\Request;
 
 class AffectationController extends Controller
 {
     public function index(){
      
-    $affectations=AffectionAgent::all();
+    $affectations=AffectionAgent::with('agent','ecoles')->get();
     $agentAll=AgentStagiare::all();
     $ecoleStageAll=EcoleStage::all();
     
@@ -46,6 +48,7 @@ class AffectationController extends Controller
     $affectation->date_debut        = $validated['date_debut'];
     $affectation->date_fin          = $validated['date_fin'];
     $affectation->type_formations   = $validated['type_formations'];
+    $affectation->status   = "En-cours";
     $affectation->save();
 
     return back()->with('success', 'L’affectation a été ajoutée avec succès.');
@@ -70,8 +73,32 @@ class AffectationController extends Controller
     $affectation->date_debut=$request->date_debut;
     $affectation->type_formations=$request->type_formations;
     $affectation->date_fin=$request->date_fin;
+        $affectation->status=$request->status;
+
       $affectation->save();
       return back()->with('success','Affectation modifiée avec succès !');
 
     }
+
+    public function FormationFinis(HistoriqueStagRequest $request)
+    {
+       
+        $affectation = AffectionAgent::find($request->affectation_id);
+        if (!$affectation) {
+            return back()->with('error', 'Affectation introuvable !');
+        }
+        $historique = new historique_stageAgent();
+        $historique->affectation_id = $request->affectation_id;
+        $historique->moyenne = $request->moyenne ? :0;
+         $historique->commentaire = $request->commentaire ? : 'Aucun commentaire';
+         $historique->date_cloture = $request->date_fin;
+        $historique->save();
+        $affectation->status = 'Terminé';
+        $affectation->save();
+
+        return back()->with('success', 'Stagiaire validé pour l agent!');
+    }
+
+
+
 }

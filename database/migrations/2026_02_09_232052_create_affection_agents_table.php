@@ -19,6 +19,7 @@ return new class extends Migration
             $table->string('date_debut');
             $table->string('date_fin')->nullable();
             $table->string('type_formations')->nullable();
+            $table->string('status')->nullable();
             $table->timestamps();
         });
     }

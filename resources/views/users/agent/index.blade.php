@@ -883,10 +883,15 @@ body.sidebar-collapsed {
                     <option>Caporal-chef</option>
                     <option>Sergent</option>
                     <option>Sergent-chef</option>
+                    <option>Sergent-chef-major   </option>
                     <option>Adjudant</option>
+                     <option>Adjudant-chef</option>
+                    <option>Adjudant-chef-major</option>
+                    <option>Sous-lieutenant</option>
                     <option>Lieutenant</option>
                     <option>Capitaine</option>
                     <option>Commandant</option>
+                    <option>Lieutenant-Colonel</option>
                     <option>Colonel</option>
                 </select>
             </div>

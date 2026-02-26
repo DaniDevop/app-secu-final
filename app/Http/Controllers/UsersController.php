@@ -95,4 +95,13 @@ class UsersController extends Controller
           $affectation->save();
           return back()->with('success','Affectation '.$status);
       }
+
+
+      public function editAdmin($id){
+        $admin=User::find($id);
+        if(!$admin){
+            return back()->with('error','Administrateur introuvable');
+        }
+        return view('users.admin.edit',compact('admin'));
+      }
 }

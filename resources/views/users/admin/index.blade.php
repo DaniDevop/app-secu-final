@@ -1072,7 +1072,7 @@
                         <td>{{ $stagiare->tel }}</td>
                         <td>
                             <div class="actions">
-                                <a class="btn-action btn-edit" title="Modifier" href="{{ route('users.editAgentStagiare', $stagiare->id) }}">
+                                <a class="btn-action btn-edit" title="Modifier" href="{{ route('admin.edit.Admin', $stagiare->id) }}">
                                     <i class="fas fa-edit"></i>
                                 </a>
                                 
