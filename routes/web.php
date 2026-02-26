@@ -33,7 +33,10 @@ Route::middleware(['user.auth'])->group(function(){
 Route::post('/administration/addAccountUser',[UsersController::class,'addAdmin'])->name('admin.add.admin');
 Route::get('/administration/affectation/status/{id}/{status}',[UsersController::class,'changesStatus'])->name('changes.Status.stagiare');
 Route::get('/administration/admin/edit/{id}',[UsersController::class,'editAdmin'])->name('admin.edit.Admin');   
+Route::post('/administration/admin/update-password',[UsersController::class,'updatePassword'])->name('admin.update.password');
+Route::post('/administration/admin/update-information',[UsersController::class,'updateAdminInformation'])->name('admin.update.information');
 
+///
 Route::get('/administration/admin',[UsersController::class,'listesAdmin'])->name('admin.listes.Admin');
 Route::get('/administration/admin',[UsersController::class,'listesAdmin'])->name('admin.listes.Admin');
 Route::get('/administration/dashboard',[UsersController::class,'index'])->name('admin.dashboard');

@@ -104,4 +104,49 @@ class UsersController extends Controller
         }
         return view('users.admin.edit',compact('admin'));
       }
+
+
+      public function updatePassword(Request $request){
+        $request->validate([
+            'current_password'=>'required',
+            'new_password'=>'required|min:4',
+        ],[
+            'current_password.required'=>'Le mot de passe actuel est requis.',
+            'new_password.required'=>'Le nouveau mot de passe est requis.',
+            'new_password.min'=>'Le nouveau mot de passe doit comporter au moins 4 caractères.',
+        ]);
+        
+         
+        $user=Auth::user();
+        if(!Hash::check($request->current_password,$user->password)){
+            return back()->with('error','Mot de passe actuel incorrect.');
+        }
+
+        $user->password=Hash::make($request->new_password);
+        $user->save();
+        return back()->with('success','Mot de passe mis à jour avec succès.');
+
+      }
+
+
+      public function updateAdminInformation(Request $request){
+        $request->validate([
+            'name'=>'required',
+            'prenom'=>'required',
+            'tel'=>'required|unique:users,tel,'.Auth::id(),
+        ],[
+               'name.required'=>'Le nom de famille est obligatoire.',
+               'prenom.required'=>'Le prénom est obligatoire.',
+               'tel.required'=>'Le numéro de téléphone est requis.',
+               
+        ]);
+
+        $user=Auth::user();
+        $user->name=$request->name;
+        $user->prenom=$request->prenom;
+        $user->tel=$request->tel;
+        $user->save();
+        return back()->with('success','Informations mises à jour avec succès !');
+
+      }
 }

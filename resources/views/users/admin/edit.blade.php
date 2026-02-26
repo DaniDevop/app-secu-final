@@ -650,6 +650,72 @@ tr:hover .avatar-circle {
         padding: 15px 10px;
     }
 }
+
+/* Amélioration des cartes */
+.card {
+    border: none;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    transition: transform 0.3s ease;
+    height: 100%;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+}
+
+.card-header {
+    border-bottom: none;
+}
+
+.card-header.bg-success {
+    background: linear-gradient(135deg, #0B3D2E, #1F6F5C) !important;
+}
+
+.card-header.bg-danger {
+    background: linear-gradient(135deg, #dc3545, #c82333) !important;
+}
+
+.form-control {
+    border-radius: 10px;
+    border: 2px solid #e9ecef;
+    padding: 12px 15px;
+    transition: all 0.3s;
+}
+
+.form-control:focus {
+    border-color: var(--gold);
+    box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.2);
+}
+
+.btn-success, .btn-danger {
+    border-radius: 10px;
+    padding: 12px;
+    transition: all 0.3s;
+}
+
+.btn-success:hover, .btn-danger:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+}
+
+/* Pour mobile */
+@media (max-width: 768px) {
+    .container {
+        padding: 0 10px;
+    }
+    
+    .card {
+        margin-bottom: 20px;
+    }
+    
+    .card-header {
+        padding: 15px;
+    }
+    
+    .card-body {
+        padding: 20px !important;
+    }
+}
 </style>
 </head>
 <body>
@@ -712,6 +778,12 @@ tr:hover .avatar-circle {
     </div>
 @endif
 
+  <div style="display: flex; justify-content: flex-end; margin-bottom: 20px;">
+          <button class="btn-add" id="addSchoolBtn" type="button" data-bs-toggle="modal" data-bs-target="#editAffectationModal">
+    <i class="fas fa-plus-circle"></i>
+    Modifier mon compte
+</button>
+        </div>
 
 
 <div class="table-container">
@@ -740,6 +812,9 @@ tr:hover .avatar-circle {
                     </div>
                 </td>
                 <td>
+                    <span class="badge bg-light text-dark border mb-1">{{ $admin->email }}</span>
+                </td>
+                <td>
                     <span class="badge bg-light text-dark border mb-1">{{ $admin->grade }}</span>
                 </td>
                 <td>
@@ -753,135 +828,80 @@ tr:hover .avatar-circle {
 
 </div>
 
-<!-- Modal Modification Affectation -->
 <div class="modal fade asp-modal" id="editAffectationModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable">
+    <div class="modal-dialog modal-dialog-centered modal-xl modal-dialog-scrollable">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title"><i class="fas fa-edit me-2"></i>Modification de l'Affectation</h5>
+                <h5 class="modal-title"><i class="fas fa-user-cog me-2"></i>Gestion du Compte</h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <form action="" method="POST" id="editAffectationForm">
-                @csrf
-        
-<div class="container mt-4">
-    <div class="row g-4">
+            
+            <div class="modal-body">
+                <div class="container-fluid">
+                    <div class="row g-4">
+                        <div class="col-md-6">
+                            <div class="card shadow-sm border-0">
+                                <div class="card-header bg-success text-white">
+                                    <h5 class="mb-0 small"><i class="fas fa-user-edit me-2"></i>Informations personnelles</h5>
+                                </div>
+                                <div class="card-body">
+                                    <form action="{{route('admin.update.information')}}" method="POST">
+                                        @csrf
+                                       
+                                        <div class="mb-3">
+                                            <label class="form-label">Nom</label>
+                                            <input type="text" name="name" value="{{ $admin->name }}" class="form-control" required>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label">Prénom</label>
+                                            <input type="text" name="prenom" value="{{ $admin->prenom }}" class="form-control" required>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label">Email</label>
+                                            <input type="email" name="email" value="{{ $admin->email }}" class="form-control" required>
+                                        </div>
 
-        <!-- ================= INFOS ADMIN ================= -->
-        <div class="col-md-6">
-            <div class="card shadow-sm rounded-4">
-                <div class="card-header bg-success text-white">
-                    <h5 class="mb-0">
-                        <i class="fas fa-user-edit me-2"></i>
-                        Modifier les informations
-                    </h5>
-                </div>
-
-                <div class="card-body">
-                    <form action="" method="POST">
-                        @csrf
-                        @method('PUT')
-
-                        <div class="mb-3">
-                            <label class="form-label">Nom</label>
-                            <input type="text" 
-                                   name="name" 
-                                   value="{{ old('name', $admin->name) }}" 
-                                   class="form-control" 
-                                   required>
+                                        <div class="mb-3">
+                                            <label class="form-label">Tel</label>
+                                            <input type="text" name="tel" value="{{ $admin->tel }}" class="form-control" required>
+                                        </div>
+                                        <button type="submit" class="btn btn-success w-100">Mettre à jour</button>
+                                    </form>
+                                </div>
+                            </div>
                         </div>
 
-                        <div class="mb-3">
-                            <label class="form-label">Prénom</label>
-                            <input type="text" 
-                                   name="prenom" 
-                                   value="{{ old('prenom', $admin->prenom) }}" 
-                                   class="form-control" 
-                                   required>
+                        <div class="col-md-6">
+                            <div class="card shadow-sm border-0">
+                                <div class="card-header bg-danger text-white">
+                                    <h5 class="mb-0 small"><i class="fas fa-lock me-2"></i>Sécurité</h5>
+                                </div>
+                                <div class="card-body">
+                                    <form action="{{route('admin.update.password')}}" method="POST">
+                                        @csrf
+                                        
+                                        <div class="mb-3">
+                                            <label class="form-label">Ancien mot de passe</label>
+                                            <input type="password" name="current_password" class="form-control" required>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label">Nouveau mot de passe</label>
+                                            <input type="password" name="new_password" class="form-control" required>
+                                        </div>
+                                        <button type="submit" class="btn btn-danger w-100">Changer le mot de passe</button>
+                                    </form>
+                                </div>
+                            </div>
                         </div>
-
-                        <div class="mb-3">
-                            <label class="form-label">Grade</label>
-                            <input type="text" 
-                                   name="grade" 
-                                   value="{{ old('grade', $admin->grade) }}" 
-                                   class="form-control" 
-                                   required>
-                        </div>
-
-                        <div class="mb-3">
-                            <label class="form-label">Téléphone</label>
-                            <input type="text" 
-                                   name="tel" 
-                                   value="{{ old('tel', $admin->tel) }}" 
-                                   class="form-control" 
-                                   required>
-                        </div>
-
-                        <button type="submit" class="btn btn-success w-100">
-                            Mettre à jour
-                        </button>
-                    </form>
+                    </div>
                 </div>
             </div>
-        </div>
-
-        <!-- ================= MOT DE PASSE ================= -->
-        <div class="col-md-6">
-            <div class="card shadow-sm rounded-4 border-danger">
-                <div class="card-header bg-danger text-white">
-                    <h5 class="mb-0">
-                        <i class="fas fa-lock me-2"></i>
-                        Modifier le mot de passe
-                    </h5>
-                </div>
-
-                <div class="card-body">
-                    <form action="" method="POST">
-                        @csrf
-                        @method('PUT')
-
-                        <div class="mb-3">
-                            <label class="form-label">Nouveau mot de passe</label>
-                            <input type="password" 
-                                   name="password" 
-                                   class="form-control"
-                                   required>
-                        </div>
-
-                        <div class="mb-3">
-                            <label class="form-label">Confirmation</label>
-                            <input type="password" 
-                                   name="password_confirmation" 
-                                   class="form-control"
-                                   required>
-                        </div>
-
-                        <button type="submit" class="btn btn-danger w-100">
-                            Mettre à jour le mot de passe
-                        </button>
-                    </form>
-                </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
             </div>
-        </div>
-
-    </div>
-</div>
-
-
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary px-4" data-bs-dismiss="modal">
-                        <i class="fas fa-times me-1"></i> Annuler
-                    </button>
-                    <button type="submit" class="btn btn-primary px-4 shadow">
-                        <i class="fas fa-save me-1"></i> Enregistrer les modifications
-                    </button>
-                </div>
-            </form>
         </div>
     </div>
 </div>
-
 
 
 

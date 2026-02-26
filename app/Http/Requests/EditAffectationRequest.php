@@ -28,7 +28,7 @@ class EditAffectationRequest extends FormRequest
             'date_fin'=>'required',
             'type_formations'=>'required',
             'affectation_id'=>'required',
-            'status'=>'required'
+           
         ];
     }
 
@@ -41,7 +41,7 @@ class EditAffectationRequest extends FormRequest
              'date_fin.required'=>'La date de fin est obligatoire.',
              'type_formations.required'=>'Le type de formation est obligatoire.',
              'affectation_id.required'=>'Affectation introuvable.',
-                'status.required'=>'Le statut de l’affectation est requis.'
+        
          ];
      }
 }

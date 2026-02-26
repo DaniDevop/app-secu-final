@@ -1070,13 +1070,21 @@
                         <td>{{$stagiare->prenom}}</td>
                         <td><span class="badge bg-light text-dark">{{$stagiare->grade}}</span></td>
                         <td>{{ $stagiare->tel }}</td>
+
                         <td>
+                            @if(Auth::user()->id == $stagiare->id)
                             <div class="actions">
                                 <a class="btn-action btn-edit" title="Modifier" href="{{ route('admin.edit.Admin', $stagiare->id) }}">
                                     <i class="fas fa-edit"></i>
                                 </a>
                                 
                             </div>
+                            @else
+                            <div class="actions">
+                               
+                                
+                            </div>
+                            @endif
                         </td>
                     </tr>
                     @endforeach

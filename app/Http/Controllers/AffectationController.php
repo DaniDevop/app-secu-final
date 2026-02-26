@@ -73,7 +73,7 @@ class AffectationController extends Controller
     $affectation->date_debut=$request->date_debut;
     $affectation->type_formations=$request->type_formations;
     $affectation->date_fin=$request->date_fin;
-        $affectation->status=$request->status;
+     
 
       $affectation->save();
       return back()->with('success','Affectation modifiée avec succès !');
