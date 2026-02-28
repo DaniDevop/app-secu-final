@@ -927,8 +927,208 @@ body.sidebar-collapsed {
 <script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.print.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
 <script>
+
+
+
+
+
+
+function generateOfficialPDF() {
+    // Get the DataTable instance
+    var table = $('#schoolsTable').DataTable();
+    
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF('landscape');
+
+    const pageWidth = doc.internal.pageSize.width;
+    const pageHeight = doc.internal.pageSize.height;
+
+    // =============================
+    // EN-TÊTE ADMINISTRATIF
+    // =============================
+
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(16);
+    doc.text("REPUBLIQUE GABONAISE", pageWidth/2, 15, { align: "center" });
+
+    doc.setFontSize(13);
+    doc.text("MINISTERE DE LA JUSTICE GARDE DES SCEAUX", pageWidth/2, 22, { align: "center" });
+
+    doc.setFontSize(12);
+    doc.text("DIRECTION DES ETUDES DU RECRUTEMENT ET DE LA FORMATION", pageWidth/2, 29, { align: "center" });
+
+    doc.setFontSize(14);
+    doc.setTextColor(11, 61, 46);
+    doc.text("LISTE OFFICIELLE DES STAGIAIRES", pageWidth/2, 40, { align: "center" });
+
+    doc.setTextColor(0,0,0);
+
+    // =============================
+    // INFOS DOCUMENT
+    // =============================
+
+    const today = new Date();
+    const dateStr = today.toLocaleDateString('fr-FR');
+    const refNumber = "REF-" + today.getFullYear() + "-" + Math.floor(Math.random() * 9999);
+
+    doc.setFontSize(11);
+    doc.setFont("helvetica", "normal");
+
+    doc.text("Référence : " + refNumber, 14, 50);
+    doc.text("Date : " + dateStr, pageWidth - 60, 50);
+
+    doc.line(14, 55, pageWidth - 14, 55);
+
+    // =============================
+    // COLONNES EXPORTABLES
+    // =============================
+
+    let columns = [];
+    $('#schoolsTable thead th').each(function(index) {
+        if (!$(this).hasClass('no-export')) {
+            columns.push($(this).text().trim());
+        }
+    });
+
+    // =============================
+    // DONNÉES FILTRÉES
+    // =============================
+
+    let rows = [];
+    
+    // Get filtered data
+    table.rows({ search: 'applied' }).every(function(rowIdx, tableLoop, rowLoop) {
+        let rowData = this.data();
+        let cleanRow = [];
+
+        // Loop through each cell in the row
+        for (let i = 0; i < rowData.length; i++) {
+            // Check if this column should be exported
+            if (!$('#schoolsTable thead th').eq(i).hasClass('no-export')) {
+                // Clean the HTML content
+                let cellContent = rowData[i];
+                
+                // If it's a string with HTML, strip HTML tags
+                if (typeof cellContent === 'string') {
+                    cellContent = cellContent.replace(/<[^>]*>/g, '');
+                }
+                
+                cleanRow.push(cellContent);
+            }
+        }
+
+        rows.push(cleanRow);
+    });
+
+    // If no filtered data, show message
+    if (rows.length === 0) {
+        Swal.fire({
+            icon: 'info',
+            title: 'Aucune donnée',
+            text: 'Aucun stagiaire trouvé avec les filtres actuels',
+        });
+        return;
+    }
+
+    // =============================
+    // TABLEAU
+    // =============================
+
+    doc.autoTable({
+        head: [columns],
+        body: rows,
+        startY: 65,
+        theme: 'grid',
+        styles: {
+            fontSize: 10,
+            cellPadding: 4,
+            overflow: 'linebreak',
+            halign: 'left'
+        },
+        headStyles: {
+            fillColor: [11, 61, 46],
+            textColor: 255,
+            halign: 'center',
+            fontStyle: 'bold'
+        },
+        alternateRowStyles: {
+            fillColor: [240, 244, 248]
+        },
+        columnStyles: {
+            0: { cellWidth: 'auto' }, // Matricule
+            1: { cellWidth: 'auto' }, // Nom
+            2: { cellWidth: 'auto' }, // Prénom
+            3: { cellWidth: 'auto' }, // Grade
+            4: { cellWidth: 'auto' }, // Service
+            5: { cellWidth: 'auto' }  // Téléphone
+        },
+        margin: { left: 14, right: 14 },
+        didDrawPage: function(data) {
+            // Add header on each new page
+            doc.setFont("helvetica", "bold");
+            doc.setFontSize(16);
+            doc.text("REPUBLIQUE GABONAISE", pageWidth/2, 15, { align: "center" });
+            doc.setFontSize(13);
+            doc.text("MINISTERE DE LA JUSTICE GARDE DES SCEAUX", pageWidth/2, 22, { align: "center" });
+            doc.setFontSize(12);
+            doc.text("DIRECTION DES ETUDES DU RECRUTEMENT ET DE LA FORMATION", pageWidth/2, 29, { align: "center" });
+            doc.setFontSize(14);
+            doc.setTextColor(11, 61, 46);
+            doc.text("LISTE OFFICIELLE DES STAGIAIRES", pageWidth/2, 40, { align: "center" });
+            doc.setTextColor(0,0,0);
+        }
+    });
+
+    // =============================
+    // SIGNATURE + CACHET
+    // =============================
+
+    let finalY = doc.lastAutoTable.finalY + 20;
+
+    if (finalY > pageHeight - 40) {
+        doc.addPage();
+        finalY = 40;
+    }
+
+    doc.setFontSize(11);
+    doc.setFont("helvetica", "normal");
+    doc.text("Le Directeur de la DERF", pageWidth - 80, finalY);
+    doc.text("Colonel Koumba nziengui ALbert", pageWidth - 80, finalY + 8);
+
+    // =============================
+    // FOOTER + PAGINATION
+    // =============================
+
+    let pageCount = doc.internal.getNumberOfPages();
+
+    for (let i = 1; i <= pageCount; i++) {
+
+        doc.setPage(i);
+
+        doc.setFontSize(9);
+        doc.text(
+            "Document administratif interne - Toute reproduction non autorisée est interdite.",
+            pageWidth / 2,
+            pageHeight - 10,
+            { align: "center" }
+        );
+
+        doc.text(
+            "Page " + i + " / " + pageCount,
+            pageWidth - 30,
+            pageHeight - 10
+        );
+    }
+
+    // =============================
+    // TELECHARGEMENT
+    // =============================
+
+    doc.save("Liste_Officielle_Stagiaires.pdf");
+}
 $(document).ready(function(){
 
     // Menu toggle functionality
@@ -981,25 +1181,13 @@ $(document).ready(function(){
         order: [[1, 'asc']],
         buttons: [
             {
-                extend: 'excelHtml5',
-                text: '<i class="fas fa-file-excel me-2"></i>Excel',
-                className: 'btn btn-success',
-                title: 'Liste_Stagiaires_ASP',
-                exportOptions: {
-                    columns: ':not(.no-export)',
-                    modifier: { search: 'applied' }
+                text: '<i class="fas fa-file-pdf me-2"></i>PDF Officiel',
+                className: 'btn btn-info',
+                action: function(e, dt, button, config) {
+                    generateOfficialPDF(); // Call without parameters
                 }
-            },
-            {
-                extend: 'csvHtml5',
-                text: '<i class="fas fa-file-csv me-2"></i>CSV',
-                className: 'btn btn-primary',
-                title: 'Liste_Stagiaires_ASP',
-                exportOptions: {
-                    columns: ':not(.no-export)',
-                    modifier: { search: 'applied' }
-                }
-            },
+            }
+            
             
         ]
     });
@@ -1037,6 +1225,14 @@ function confirmDelete(id, name) {
         }
     });
 }
+
+
+
+// 
+
+
+
+
 </script>
 
 </body>

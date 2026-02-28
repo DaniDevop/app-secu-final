@@ -74,6 +74,9 @@
 @endif
 
     <div class="d-flex justify-content-end mb-4">
+          <button class="btn btn-info me-2" onclick="generateEcolesPDF()">
+        <i class="fas fa-file-pdf me-2"></i> PDF Officiel
+    </button>
         <button class="btn-add" id="addSchoolBtn" type="button" data-bs-toggle="modal" data-bs-target="#addSchoolModal">
             <i class="fas fa-plus-circle"></i> Ajouter une école
         </button>
@@ -132,14 +135,7 @@
     </div>
 </div>
 
-    <div class="empty-state" id="emptyState">
-        <div class="empty-icon"><i class="fas fa-university"></i></div>
-        <h3>Aucune école enregistrée</h3>
-        <p>Commencez par ajouter votre première école partenaire.</p>
-        <button class="btn-add" id="addFirstSchoolBtn" data-bs-toggle="modal" data-bs-target="#addSchoolModal">
-            <i class="fas fa-plus-circle"></i> Ajouter une école
-        </button>
-    </div>
+    
 
     <!-- MODAL ADD / EDIT SCHOOL -->
     <div class="modal fade asp-modal" id="addSchoolModal" tabindex="-1" aria-hidden="true">
@@ -182,9 +178,290 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
 <script src="https://cdn.datatables.net/1.13.7/js/dataTables.bootstrap5.min.js"></script>
+<!-- AJOUTEZ CES DEUX LIGNES POUR LES BOUTONS DATATABLES -->
+<script src="https://cdn.datatables.net/buttons/2.4.2/js/dataTables.buttons.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.html5.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
+
+
 
 <script>
+function generateEcolesPDF() {
+    // Vérifier si DataTable existe
+    if (!$.fn.DataTable.isDataTable('#schoolsTable')) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Erreur',
+            text: 'La table n\'est pas initialisée',
+        });
+        return;
+    }
+    
+    // Récupérer l'instance DataTable
+    var table = $('#schoolsTable').DataTable();
+    
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF('landscape');
+
+    const pageWidth = doc.internal.pageSize.width;
+    const pageHeight = doc.internal.pageSize.height;
+
+    // =============================
+    // EN-TÊTE ADMINISTRATIF
+    // =============================
+    function addHeader() {
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(16);
+        doc.text("REPUBLIQUE ALGERIENNE DEMOCRATIQUE ET POPULAIRE", pageWidth/2, 15, { align: "center" });
+
+        doc.setFontSize(13);
+        doc.text("MINISTERE DE LA JUSTICE", pageWidth/2, 22, { align: "center" });
+
+        doc.setFontSize(12);
+        doc.text("DIRECTION GENERALE DE L'ADMINISTRATION PENITENTIAIRE", pageWidth/2, 29, { align: "center" });
+
+        doc.setFontSize(14);
+        doc.setTextColor(11, 61, 46);
+        doc.text("LISTE OFFICIELLE DES ÉTABLISSEMENTS PARTENAIRES", pageWidth/2, 40, { align: "center" });
+
+        doc.setTextColor(0,0,0);
+        
+        // Ajouter la ligne de séparation
+        doc.line(14, 45, pageWidth - 14, 45);
+    }
+
+    // Ajouter l'en-tête sur la première page
+    addHeader();
+
+    // =============================
+    // INFOS DOCUMENT
+    // =============================
+    const today = new Date();
+    const dateStr = today.toLocaleDateString('fr-FR');
+    const refNumber = "ECO-" + today.getFullYear() + "-" + Math.floor(Math.random() * 9999);
+
+    doc.setFontSize(11);
+    doc.setFont("helvetica", "normal");
+
+    doc.text("Référence : " + refNumber, 14, 50);
+    doc.text("Date d'édition : " + dateStr, pageWidth - 70, 50);
+
+    // =============================
+    // COLONNES EXPORTABLES
+    // =============================
+    let columns = [];
+    $('#schoolsTable thead th').each(function(index) {
+        // Nettoyer le texte des icônes HTML
+        let colText = $(this).clone().children().remove().end().text().trim();
+        columns.push(colText || $(this).text().trim());
+    });
+
+    // =============================
+    // DONNÉES FILTRÉES
+    // =============================
+    let rows = [];
+    
+    // Parcourir les lignes filtrées
+    table.rows({ search: 'applied' }).every(function(rowIdx, tableLoop, rowLoop) {
+        let rowData = this.data();
+        let cleanRow = [];
+
+        // Parcourir chaque cellule de la ligne
+        for (let i = 0; i < rowData.length; i++) {
+            // Nettoyer le contenu HTML
+            let cellContent = rowData[i];
+            
+            // Si c'est une chaîne avec du HTML, nettoyer
+            if (typeof cellContent === 'string') {
+                // Supprimer les balises HTML
+                cellContent = cellContent.replace(/<[^>]*>/g, '');
+                // Remplacer les entités HTML courantes
+                cellContent = cellContent.replace(/&nbsp;/g, ' ')
+                                         .replace(/&agrave;/g, 'à')
+                                         .replace(/&eacute;/g, 'é')
+                                         .replace(/&egrave;/g, 'è')
+                                         .replace(/&ccedil;/g, 'ç')
+                                         .replace(/&icirc;/g, 'î')
+                                         .replace(/&ocirc;/g, 'ô')
+                                         .replace(/&ucirc;/g, 'û')
+                                         .trim();
+            }
+            
+            cleanRow.push(cellContent);
+        }
+
+        // Ne garder que les lignes qui ont du contenu
+        if (cleanRow.some(cell => cell && cell.toString().trim() !== '')) {
+            rows.push(cleanRow);
+        }
+    });
+
+    // Vérifier s'il y a des données
+    if (rows.length === 0) {
+        Swal.fire({
+            icon: 'info',
+            title: 'Aucune donnée',
+            text: 'Aucune école trouvée avec les filtres actuels',
+        });
+        return;
+    }
+
+    // =============================
+    // TABLEAU PRINCIPAL
+    // =============================
+    doc.autoTable({
+        head: [columns],
+        body: rows,
+        startY: 65,
+        theme: 'grid',
+        styles: {
+            fontSize: 11,
+            cellPadding: 5,
+            overflow: 'linebreak',
+            halign: 'left',
+            valign: 'middle'
+        },
+        headStyles: {
+            fillColor: [11, 61, 46],
+            textColor: 255,
+            halign: 'center',
+            fontStyle: 'bold',
+            fontSize: 12
+        },
+        alternateRowStyles: {
+            fillColor: [240, 244, 248]
+        },
+        columnStyles: {
+            0: { cellWidth: 80 }, // Nom de l'école
+            1: { cellWidth: 60 }, // Pays
+            2: { cellWidth: 50, halign: 'center' }, // Stagiaires
+            3: { cellWidth: 40, halign: 'center' }  // Actions
+        },
+        margin: { left: 14, right: 14 },
+        didDrawPage: function(data) {
+            // N'ajouter l'en-tête que si ce n'est pas la première page
+            if (data.pageNumber > 1) {
+                addHeader();
+                
+                // Réajouter les infos document sur les nouvelles pages
+                doc.setFontSize(11);
+                doc.setFont("helvetica", "normal");
+                doc.text("Référence : " + refNumber, 14, 50);
+                doc.text("Date d'édition : " + dateStr, pageWidth - 70, 50);
+                doc.setTextColor(0,0,0);
+            }
+        }
+    });
+
+    // =============================
+    // RÉCAPITULATIF STATISTIQUES
+    // =============================
+    let finalY = doc.lastAutoTable.finalY + 15;
+
+    // Vérifier s'il reste assez d'espace sur la page pour le récapitulatif
+    if (finalY > pageHeight - 70) {
+        doc.addPage();
+        addHeader();
+        finalY = 65; // Réinitialiser la position Y sur la nouvelle page
+    }
+
+    // Calculer les statistiques
+    let totalEcoles = rows.length;
+    
+    // Compter les écoles par pays (si disponible)
+    let paysStats = {};
+    rows.forEach(row => {
+        let pays = row[1] || 'Non spécifié';
+        paysStats[pays] = (paysStats[pays] || 0) + 1;
+    });
+
+    // Ajouter le récapitulatif
+    doc.setFontSize(12);
+    doc.setFont("helvetica", "bold");
+    doc.text("RÉCAPITULATIF DES ÉTABLISSEMENTS", 14, finalY);
+    
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(11);
+    doc.text(`Total des établissements : ${totalEcoles}`, 14, finalY + 8);
+    
+    // Afficher la répartition par pays
+    let yPos = finalY + 16;
+    doc.setFont("helvetica", "bold");
+    doc.text("Répartition par pays :", 14, yPos);
+    doc.setFont("helvetica", "normal");
+    
+    yPos += 8;
+    
+    // Calculer la hauteur nécessaire pour la répartition par pays
+    let paysList = Object.keys(paysStats);
+    let neededHeight = paysList.length * 7 + 40; // 7px par pays + marge
+    
+    // Vérifier si on a assez d'espace pour la répartition par pays
+    if (yPos + neededHeight > pageHeight - 40) {
+        doc.addPage();
+        addHeader();
+        yPos = 65;
+        
+        // Réécrire l'en-tête du récapitulatif sur la nouvelle page
+        doc.setFontSize(12);
+        doc.setFont("helvetica", "bold");
+        doc.text("RÉCAPITULATIF DES ÉTABLISSEMENTS (suite)", 14, yPos);
+        yPos += 8;
+    }
+    
+    for (let pays in paysStats) {
+        doc.text(`• ${pays} : ${paysStats[pays]} établissement${paysStats[pays] > 1 ? 's' : ''}`, 20, yPos);
+        yPos += 7;
+    }
+
+    // =============================
+    // SIGNATURE + CACHET
+    // =============================
+    let signatureY = yPos + 20;
+
+    // Vérifier s'il reste assez d'espace pour la signature
+    if (signatureY > pageHeight - 30) {
+        doc.addPage();
+        addHeader();
+        signatureY = 65;
+    }
+
+    doc.setFontSize(11);
+    doc.setFont("helvetica", "normal");
+    doc.text("Le Directeur de l'Administration Pénitentiaire", pageWidth - 100, signatureY);
+    doc.text("Signature et Cachet Officiel", pageWidth - 100, signatureY + 8);
+
+    // =============================
+    // FOOTER + PAGINATION
+    // =============================
+    let pageCount = doc.internal.getNumberOfPages();
+
+    for (let i = 1; i <= pageCount; i++) {
+        doc.setPage(i);
+
+        doc.setFontSize(9);
+        doc.text(
+            "Document administratif interne - Direction Générale de l'Administration Pénitentiaire",
+            pageWidth / 2,
+            pageHeight - 10,
+            { align: "center" }
+        );
+
+        doc.text(
+            "Page " + i + " / " + pageCount,
+            pageWidth - 30,
+            pageHeight - 10
+        );
+    }
+
+    // =============================
+    // TELECHARGEMENT
+    // =============================
+    doc.save("Liste_Etablissements_ASP.pdf");
+}
+
 $(document).ready(function() {
     // Initialize DataTable
     var table = $('#schoolsTable').DataTable({
@@ -193,15 +470,10 @@ $(document).ready(function() {
             search: "",
             searchPlaceholder: "Rechercher..."
         },
-        dom: 'rtip',
-        pageLength: 10,
-        responsive: true,
-        ordering: true,
-        paging: true,
-        lengthChange: false,
-        info: false
+      
+       
+        
     });
-
     // Custom search
     $('#searchInput').on('keyup', function() {
         table.search(this.value).draw();
@@ -274,9 +546,8 @@ $(document).ready(function() {
     // Form validation
     $('#schoolForm').on('submit', function(e) {
         let schoolName = $('#schoolName').val().trim();
-        let schoolAddress = $('#schoolAddress').val().trim();
         
-        if (schoolName === '' || schoolAddress === '') {
+        if (schoolName === '') {
             e.preventDefault();
             Swal.fire({
                 icon: 'error',
@@ -290,7 +561,6 @@ $(document).ready(function() {
     // Reset form when modal is closed
     $('#addSchoolModal').on('hidden.bs.modal', function() {
         $('#schoolForm')[0].reset();
-        $('#schoolId').val('');
     });
 });
 
@@ -313,6 +583,5 @@ function confirmDelete(id, name) {
     });
 }
 </script>
-
 </body>
 </html>

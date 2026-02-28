@@ -798,7 +798,7 @@ tr:hover .avatar-circle {
             <li><a href="{{route('admin.service.index')}}"><i class="fas fa-briefcase"></i><span> Services</span></a></li>
             <li><a href="{{route('admin.listes.Admin')}}"><i class="fas fa-users-cog"></i><span> Administrations</span></a></li>
             <li><a href="{{route('users.affectation.agent')}}"><i class="fas fa-exchange-alt"></i><span> Stages / Affectations</span></a></li>
-                <li class="nav-item mt-auto">
+            <li class="nav-item mt-auto">
     <form method="POST" action="{{ route('logout') }}">
         @csrf
         <button type="submit" class="nav-link btn btn-link text-start w-100 text-danger">
@@ -857,7 +857,7 @@ tr:hover .avatar-circle {
                 <th><i class="fas fa-calendar me-1"></i>Période</th>
                 <th><i class="fas fa-tag me-1"></i>Formations</th>
                 <th><i class="fas fa-tag me-1"></i>Statut</th>
-                <th class="no-export"><i class="fas fa-cog me-1"></i>Details</th>
+                <th class="no-export"><i class="fas fa-cog me-1"></i>Actions</th>
             </tr>
         </thead>
         <tbody>
@@ -897,9 +897,7 @@ tr:hover .avatar-circle {
                         <a href="{{ route('users.editAffectationt.agent', $affect->id) }}" class="btn btn-outline-primary btn-sm" title="Modifier">
                             <i class="fas fa-edit"></i>
                         </a>
-                       
                       
-                       
                     </div>
                 </td>
             </tr>
@@ -988,8 +986,234 @@ tr:hover .avatar-circle {
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 <script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.html5.min.js"></script>
 <script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.print.min.js"></script>
-
+<!-- Ajouter ces scripts dans l'en-tête ou avant la fermeture du body -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
 <script>
+
+
+function generateAffectationsPDF() {
+
+    if (!$.fn.DataTable.isDataTable('#schoolsTable')) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Erreur',
+            text: 'La table n\'est pas initialisée',
+        });
+        return;
+    }
+
+    var table = $('#schoolsTable').DataTable();
+
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF('landscape');
+
+    const pageWidth = doc.internal.pageSize.width;
+    const pageHeight = doc.internal.pageSize.height;
+
+    const marginX = 20;
+    const usableWidth = pageWidth - (marginX * 2);
+
+    // =============================
+    // EN-TÊTE
+    // =============================
+
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(15);
+    doc.text("REPUBLIQUE ALGERIENNE DEMOCRATIQUE ET POPULAIRE", pageWidth/2, 15, { align: "center" });
+
+    doc.setFontSize(12);
+    doc.text("MINISTERE DE LA JUSTICE", pageWidth/2, 22, { align: "center" });
+
+    doc.setFontSize(11);
+    doc.text("DIRECTION GENERALE DE L'ADMINISTRATION PENITENTIAIRE", pageWidth/2, 28, { align: "center" });
+
+    doc.setDrawColor(11, 61, 46);
+    doc.setLineWidth(1.2);
+    doc.line(marginX, 32, pageWidth - marginX, 32);
+
+    doc.setFontSize(14);
+    doc.setTextColor(11, 61, 46);
+    doc.text("SUIVI DES AFFECTATIONS ET STAGES", pageWidth/2, 40, { align: "center" });
+    doc.setTextColor(0,0,0);
+
+    // =============================
+    // INFOS DOCUMENT
+    // =============================
+
+    const today = new Date();
+    const dateStr = today.toLocaleDateString('fr-FR');
+    const refNumber = "AFF-" + today.getFullYear() + "-" + Math.floor(Math.random() * 9999);
+
+    doc.setFontSize(10);
+    doc.text("Référence : " + refNumber, marginX, 48);
+    doc.text("Date d'édition : " + dateStr, pageWidth - 80, 48);
+
+    doc.setLineWidth(0.5);
+    doc.line(marginX, 52, pageWidth - marginX, 52);
+
+    // =============================
+    // COLONNES
+    // =============================
+
+    let columns = [];
+    $('#schoolsTable thead th').each(function(index) {
+        if (!$(this).hasClass('no-export')) {
+            let colText = $(this).clone().children().remove().end().text().trim();
+            columns.push(colText || $(this).text().trim());
+        }
+    });
+
+    // =============================
+    // DONNÉES FILTRÉES
+    // =============================
+
+    let rows = [];
+
+    table.rows({ search: 'applied' }).every(function() {
+
+        let rowData = this.data();
+        let cleanRow = [];
+
+        for (let i = 0; i < rowData.length; i++) {
+
+            if (!$('#schoolsTable thead th').eq(i).hasClass('no-export')) {
+
+                let cellContent = rowData[i];
+
+                if (typeof cellContent === 'string') {
+                    cellContent = cellContent.replace(/<[^>]*>/g, '').trim();
+                }
+
+                cleanRow.push(cellContent);
+            }
+        }
+
+        if (cleanRow.some(cell => cell && cell.toString().trim() !== '')) {
+            rows.push(cleanRow);
+        }
+    });
+
+    if (rows.length === 0) {
+        Swal.fire({
+            icon: 'info',
+            title: 'Aucune donnée',
+            text: 'Aucune affectation trouvée avec les filtres actuels',
+        });
+        return;
+    }
+
+    // =============================
+    // TABLEAU CENTRÉ
+    // =============================
+
+    doc.autoTable({
+        head: [columns],
+        body: rows,
+        startY: 60,
+        tableWidth: usableWidth,
+        margin: { left: marginX, right: marginX },
+        styles: {
+            fontSize: 9,
+            cellPadding: 3,
+            halign: 'center',
+            valign: 'middle'
+        },
+        headStyles: {
+            fillColor: [11, 61, 46],
+            textColor: 255,
+            fontStyle: 'bold',
+            halign: 'center'
+        },
+        alternateRowStyles: {
+            fillColor: [245, 248, 250]
+        }
+    });
+
+    // =============================
+    // STATISTIQUES SUR UNE SEULE LIGNE
+    // =============================
+
+    let finalY = doc.lastAutoTable.finalY + 15;
+
+    let stats = {
+        encours: 0,
+        termine: 0,
+        annule: 0
+    };
+
+    rows.forEach(row => {
+        let status = row[6]?.toString().toLowerCase() || '';
+        if (status.includes('terminé') || status.includes('termine')) {
+            stats.termine++;
+        } else if (status.includes('annulé') || status.includes('annule')) {
+            stats.annule++;
+        } else {
+            stats.encours++;
+        }
+    });
+
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(11);
+    doc.text("STATISTIQUES GENERALES :", marginX, finalY);
+
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(10);
+
+    let statsLineY = finalY + 8;
+
+    doc.text(
+        `Total : ${rows.length}    |    En cours : ${stats.encours}    |    Terminées : ${stats.termine}    |    Annulées : ${stats.annule}`,
+        pageWidth / 2,
+        statsLineY,
+        { align: "center" }
+    );
+
+    // =============================
+    // SIGNATURE
+    // =============================
+
+    let signatureY = statsLineY + 20;
+
+    if (signatureY > pageHeight - 40) {
+        doc.addPage();
+        signatureY = 40;
+    }
+
+    doc.setFontSize(11);
+    doc.text("Le Directeur de l'Administration Pénitentiaire", pageWidth - 110, signatureY);
+    doc.text("Signature et Cachet Officiel", pageWidth - 110, signatureY + 8);
+
+    // =============================
+    // FOOTER
+    // =============================
+
+    let pageCount = doc.internal.getNumberOfPages();
+
+    for (let i = 1; i <= pageCount; i++) {
+
+        doc.setPage(i);
+
+        doc.setFontSize(9);
+
+        doc.text(
+            "Document administratif interne - Direction Générale de l'Administration Pénitentiaire",
+            pageWidth / 2,
+            pageHeight - 10,
+            { align: "center" }
+        );
+
+        doc.text(
+            "Page " + i + " / " + pageCount,
+            pageWidth - 35,
+            pageHeight - 10
+        );
+    }
+
+    doc.save("Suivi_Affectations_ASP.pdf");
+}
+
+// Mettre à jour la configuration des boutons DataTables
 $(document).ready(function () {
     // Menu toggle for mobile
     $('#menuToggle').on('click', function() {
@@ -1024,7 +1248,7 @@ $(document).ready(function () {
                     next: "<i class='fas fa-chevron-right'></i>"
                 }
             },
-            responsive: false, // Désactivé pour garder le contrôle manuel
+            responsive: false,
             autoWidth: false,
             paging: true,
             pageLength: 10,
@@ -1034,24 +1258,16 @@ $(document).ready(function () {
             info: true,
             dom: '<"row"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6"f>>rt<"row"<"col-sm-12 col-md-5"i><"col-sm-12 col-md-7"p>>',
             buttons: [
+                
                 {
-                    extend: 'excelHtml5',
-                    text: '<i class="fas fa-file-excel me-1"></i> Exporter en Excel',
-                    className: 'btn-excel',
-                    titleAttr: 'Exporter en Excel',
-                    exportOptions: {
-                        columns: ':visible:not(.no-export)'
+                    text: '<i class="fas fa-file-pdf me-1"></i> PDF Officiel',
+                    className: 'btn-info',
+                    titleAttr: 'Générer PDF officiel',
+                    action: function(e, dt, button, config) {
+                        generateAffectationsPDF();
                     }
                 },
-                {
-                    extend: 'print',
-                    text: '<i class="fas fa-print me-1"></i> Imprimer',
-                    className: 'btn-print',
-                    titleAttr: 'Imprimer',
-                    exportOptions: {
-                        columns: ':visible:not(.no-export)'
-                    }
-                }
+               
             ],
             columnDefs: [
                 { targets: 'no-export', orderable: false, searchable: false }
@@ -1064,11 +1280,12 @@ $(document).ready(function () {
                 this.api().buttons().container()
                     .appendTo('#exportButtonsContainer')
                     .css('display', 'flex')
-                    .css('gap', '10px');
+                    .css('gap', '10px')
+                    .css('flex-wrap', 'wrap');
             }
         });
 
-        // Recherche personnalisée (optionnelle car DataTables a déjà sa recherche)
+        // Recherche personnalisée
         $('#searchInput').on('keyup', function () {
             table.search(this.value).draw();
         });
@@ -1088,6 +1305,8 @@ $(document).ready(function () {
         }
     });
 });
+
+
 
 // Change status function
 function changeStatus(id, newStatus) {

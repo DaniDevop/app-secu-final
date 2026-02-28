@@ -1,127 +1,39 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="en">
+ 
 <head>
-<meta charset="UTF-8">
-<title>Connexion - Gestion des Stages</title>
-<style>
-    body {
-    margin: 0;
-    font-family: 'Segoe UI', sans-serif;
-    background: linear-gradient(rgba(8,28,21,0.9), rgba(8,28,21,0.9)),
-                url('https://images.unsplash.com/photo-1581092580497-e0d23cbdf1dc');
-    background-size: cover;
-    height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-.login-container {
-    width: 100%;
-    display: flex;
-    justify-content: center;
-}
-
-.login-card {
-    background: #1B4332;
-    padding: 40px;
-    width: 400px;
-    border-radius: 12px;
-    box-shadow: 0 15px 40px rgba(0,0,0,0.6);
-    color: white;
-}
-
-.login-header {
-    text-align: center;
-    margin-bottom: 30px;
-}
-
-.login-header h1 {
-    font-size: 20px;
-    letter-spacing: 2px;
-    color: #D4AF37;
-}
-
-.login-header p {
-    font-size: 13px;
-    opacity: 0.8;
-}
-
-.input-group {
-    margin-bottom: 20px;
-}
-
-.input-group label {
-    display: block;
-    font-size: 14px;
-    margin-bottom: 6px;
-}
-
-.input-group input {
-    width: 100%;
-    padding: 12px;
-    border: none;
-    border-radius: 6px;
-    outline: none;
-    background: #081C15;
-    color: white;
-}
-
-button {
-    width: 100%;
-    padding: 12px;
-    border: none;
-    background: #D4AF37;
-    color: #081C15;
-    font-weight: bold;
-    border-radius: 6px;
-    cursor: pointer;
-    transition: 0.3s;
-}
-
-button:hover {
-    background: #c59b2d;
-}
-
-.login-footer {
-    text-align: center;
-    margin-top: 20px;
-    font-size: 12px;
-    opacity: 0.7;
-}
-
-</style>
+    <meta charset="UTF - 8">
+    <meta name="viewport" content="width=device - width, initial - scale = 1.0">
+    <title>jsPDF with HTML and CSS</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        #content {
+            font-family: Arial, sans - serif;
+            border: 1px solid #ccc;
+            padding: 20px;
+        }
+    </style>
 </head>
+ 
 <body>
-
-<div class="login-container">
-
-    <div class="login-card">
-        <div class="login-header">
-            <h1>SÉCURITÉ PÉNITENTIAIRE</h1>
-            <p>République Gabonaise</p>
-        </div>
-
-        <form>
-            <div class="input-group">
-                <label>Matricule</label>
-                <input type="text" placeholder="Entrez votre matricule">
-            </div>
-
-            <div class="input-group">
-                <label>Mot de passe</label>
-                <input type="password" placeholder="********">
-            </div>
-
-            <button type="submit">Se connecter</button>
-        </form>
-
-        <div class="login-footer">
-            Application interne sécurisée
-        </div>
+    <div id="content">
+        <h1>Styled Content</h1>
+        <p>This text has some CSS styling applied.</p>
     </div>
-
-</div>
-
+    <button id="generatePDF">Generate PDF</button>
+    <script>
+        const generatePDFButton = document.getElementById('generatePDF');
+        generatePDFButton.addEventListener('click', async function () {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            const content = document.getElementById('content');
+            const canvas = await html2canvas(content);
+            const imgData = canvas.toDataURL('image/png');
+            doc.addImage(imgData, 'PNG', 10, 10, 180, 0);
+            doc.save('styled_content.pdf');
+        });
+    </script>
 </body>
+ 
 </html>
