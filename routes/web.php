@@ -74,6 +74,8 @@ Route::post('/administration/service/ServiceAgent/editService',[EcoleController:
 
 
     Route::post('/users/admin/historique/agent/stage/final',[HistroriqueStageController::class,'addHsitorique'])->name('addHistorique.stage');  
+        Route::get('/users/admin/historique/agent/stage',[HistroriqueStageController::class,'index'])->name('users.historique.agent.stage');
+                Route::get('/users/admin/historique/agent/stage/edit/{id}',[HistroriqueStageController::class,'editHistorique'])->name('users.historique.agent.stage.edit');
 
 });
 

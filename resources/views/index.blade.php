@@ -448,8 +448,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
-// Optionnel : Afficher/masquer mot de passe (à décommenter si besoin)
-/*
+
 function togglePasswordVisibility() {
     const password = document.getElementById('password');
     const toggleBtn = document.querySelector('.toggle-password');
@@ -462,7 +461,7 @@ function togglePasswordVisibility() {
         toggleBtn.innerHTML = '<i class="fas fa-eye"></i>';
     }
 }
-*/
+
 </script>
 
 <!-- SweetAlert2 pour des notifications plus jolies (optionnel) -->

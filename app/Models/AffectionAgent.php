@@ -7,7 +7,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class AffectionAgent extends Model
 {
-  
+      protected $table = 'affection_agents'; // ou le nom correct de votre table
+
     public function agent(): BelongsTo
     {
         return $this->belongsTo(AgentStagiare::class, 'agent_stagiare_id');

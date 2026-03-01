@@ -743,17 +743,22 @@ body.sidebar-collapsed {
 
         <ul class="menu">
             <li><a href="{{route('admin.dashboard')}}"><i class="fas fa-home"></i><span> Accueil</span></a></li>
-            <li><a href="{{route('users.agent.index')}}" class="active"><i class="fas fa-users"></i><span> Agents</span></a></li>
-            <li><a href="{{route('admin.ecole.index')}}"><i class="fas fa-school"></i><span> Écoles</span></a></li>
+            <li><a href="{{route('users.agent.index')}}"><i class="fas fa-user-shield"></i><span> Agents</span></a></li>
+            <li><a href="{{route('admin.ecole.index')}}"><i class="fas fa-university"></i><span> Écoles</span></a></li>
             <li><a href="{{route('admin.service.index')}}"><i class="fas fa-briefcase"></i><span> Services</span></a></li>
-            <li><a href="{{route('admin.listes.Admin')}}"><i class="fas fa-user-tie"></i><span> Administrations</span></a></li>
+            <li><a href="{{route('admin.listes.Admin')}}"><i class="fas fa-users-cog"></i><span> Administrations</span></a></li>
             <li><a href="{{route('users.affectation.agent')}}"><i class="fas fa-exchange-alt"></i><span> Stages / Affectations</span></a></li>
+                    <li>
+   <a href="{{route('users.historique.agent.stage')}}">
+        <i class="fas fa-history"></i> Historique
+    </a>
+</li>
             <li class="nav-item mt-auto">
     <form method="POST" action="{{ route('logout') }}">
         @csrf
         <button type="submit" class="nav-link btn btn-link text-start w-100 text-danger">
             <i class="fas fa-sign-out-alt me-2"></i>
-            Déconnexion
+            Déconnexion 
         </button>
     </form>
 </li>

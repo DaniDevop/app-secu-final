@@ -597,6 +597,9 @@ body {
             <li><a href="{{route('admin.service.index')}}" class="active"><i class="fas fa-briefcase"></i><span> Services</span></a></li>
             <li><a href="{{route('admin.listes.Admin')}}"><i class="fas fa-users-cog"></i><span> Administrations</span></a></li>
             <li><a href="{{route('users.affectation.agent')}}"><i class="fas fa-exchange-alt"></i><span> Stages / Affectations</span></a></li>
+             <a href="{{route('users.historique.agent.stage')}}">
+        <i class="fas fa-history"></i> Historique
+    </a>
             <li class="nav-item mt-auto">
     <form method="POST" action="{{ route('logout') }}">
         @csrf

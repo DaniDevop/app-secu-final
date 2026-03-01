@@ -670,6 +670,11 @@ tr:hover .avatar-circle {
             <li><a href="{{route('admin.service.index')}}"><i class="fas fa-briefcase"></i><span> Services</span></a></li>
             <li><a href="{{route('admin.listes.Admin')}}"><i class="fas fa-users-cog"></i><span> Administrations</span></a></li>
             <li><a href="{{route('users.affectation.agent')}}"><i class="fas fa-exchange-alt"></i><span> Stages / Affectations</span></a></li>
+                    <li>
+    <a href="{{route('users.historique.agent.stage')}}">
+        <i class="fas fa-history"></i> Historique
+    </a>
+</li>
             <li class="nav-item mt-auto">
     <form method="POST" action="{{ route('logout') }}">
         @csrf
@@ -873,13 +878,13 @@ tr:hover .avatar-circle {
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content border-0 shadow">
             <div class="modal-header bg-success text-white">
-                <h5 class="modal-title"><i class="fas fa-graduation-cap me-2"></i> Clôturer et Noter le Stage</h5>
+                <h5 class="modal-title"><i class="fas fa-graduation-cap me-2"></i> Clôturer et Noter le Stage maintenant ?</h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <form action="{{route('addHistorique.stage')}}" method="POST">
                 @csrf
                 <div class="modal-body">
-                    <input type="hidden" name="affectation_id" id="val_affectation_id" value="{{$affect->id}}">
+                    <input type="number" name="affectation_id" id="val_affectation_id" value="{{$affect->id}}" hidden>
 
                     <div class="row g-3">
                         <div class="col-md-6">
