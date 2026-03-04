@@ -16,7 +16,7 @@ class UsersController extends Controller
       public function logout(){
 
       Auth::logout();
-       return view('index');
+       return redirect()->route('login');
       }
       public function doLogin(Request $request){
            
@@ -33,7 +33,7 @@ class UsersController extends Controller
             return redirect()->route('admin.dashboard');
            }
 
-             return back();
+             return back()->with('error','Informations introuvable !');
 
       }
 

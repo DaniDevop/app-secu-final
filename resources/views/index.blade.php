@@ -742,44 +742,6 @@ function togglePasswordVisibility() {
 
 <!-- SweetAlert2 pour les notifications -->
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<script>
-    @if(session('success'))
-        Swal.fire({
-            icon: 'success',
-            title: 'Succès',
-            text: "{{ session('success') }}",
-            timer: 3000,
-            showConfirmButton: false,
-            toast: true,
-            position: 'top-end',
-            background: '#1B4332',
-            color: '#fff'
-        });
-    @endif
-    
-    @if(session('error'))
-        Swal.fire({
-            icon: 'error',
-            title: 'Erreur',
-            text: "{{ session('error') }}",
-            confirmButtonColor: '#D4AF37',
-            background: '#1B4332',
-            color: '#fff',
-            iconColor: '#dc3545'
-        });
-    @endif
-    
-    @if($errors->any())
-        Swal.fire({
-            icon: 'warning',
-            title: 'Attention',
-            html: '{!! implode("<br>", $errors->all()) !!}',
-            confirmButtonColor: '#D4AF37',
-            background: '#1B4332',
-            color: '#fff'
-        });
-    @endif
-</script>
 
 </body>
 </html>

@@ -636,7 +636,6 @@ body{
             <i class="fas fa-clock"></i>
             <h3>Stages en cours</h3>
             <p> {{$stageEncours}} </p>
-            <small style="color:#6c757d; margin-top:10px;">{{$stageEncours > 0 ? round(($stageEncours/($stageEncours+$stageValider))*100, 1) : 0}}% des stages actifs</small>
         </div>
 
         <div class="card">
@@ -650,7 +649,6 @@ body{
             <i class="fas fa-check-circle"></i>
             <h3>Stages terminés</h3>
             <p> {{$stageValider}} </p>
-            <small style="color:#6c757d; margin-top:10px;">{{$stageValider > 0 ? round(($stageValider/($stageEncours+$stageValider))*100, 1) : 0}}% des stages</small>
         </div>
     </div>
 
