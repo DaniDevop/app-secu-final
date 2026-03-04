@@ -724,6 +724,39 @@ body.sidebar-collapsed {
         padding: 15px 10px;
     }
 }
+
+.searchable-select-container {
+    position: relative;
+    width: 100%;
+}
+
+.searchable-select-dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    max-height: 200px;
+    overflow-y: auto;
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    z-index: 1000;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.searchable-select-dropdown .dropdown-item {
+    padding: 8px 12px;
+    cursor: pointer;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.searchable-select-dropdown .dropdown-item:hover {
+    background-color: #f8f9fa;
+}
+
+.searchable-select-dropdown .dropdown-item.selected {
+    background-color: #e7f3ff;
+}
 </style>
 </head>
 
@@ -810,7 +843,7 @@ body.sidebar-collapsed {
     <th>Grade</th>
     <th>Service</th>
     <th>Téléphone</th>
-    <th class="no-export">Actions</th>
+    <th class="no-export">Details</th>
 </tr>
 </thead>
 <tbody>
@@ -826,9 +859,7 @@ body.sidebar-collapsed {
         <a href="{{ route('users.editAgentStagiare', $stagiare->id) }}" class="btn btn-sm btn-primary">
             <i class="fas fa-edit"></i>
         </a>
-        <button onclick="confirmDelete({{$stagiare->id}}, '{{$stagiare->name}} {{$stagiare->prenom}}')" class="btn btn-sm btn-danger">
-            <i class="fas fa-trash"></i>
-        </button>
+       
     </td>
 </tr>
 @endforeach
@@ -857,16 +888,24 @@ body.sidebar-collapsed {
                 <label class="form-label fw-bold"><i class="fas fa-id-card me-1 text-primary"></i>Matricule</label>
                 <input type="text" name="matricule" class="form-control" placeholder="Ex: ASP-2024-001" required>
             </div>
-            <div class="col-md-6">
-                <label class="form-label fw-bold"><i class="fas fa-building me-1 text-primary"></i>Service</label>
-                <select name="service_id" class="form-select" required>
-                    <option value="" disabled selected>Choisir un service...</option>
-                    @foreach($servicesAll as $service)
-                    <option value="{{$service->id}}">{{$service->nom_services}}</option>
-                    @endforeach
-                </select>
+           <div class="col-md-6">
+    <label class="form-label fw-bold"><i class="fas fa-building me-1 text-primary"></i>Service</label>
+    <div class="searchable-select-container">
+        <input type="text" 
+               class="form-control" 
+               id="serviceSearchInput" 
+               placeholder="Rechercher un service..."
+               autocomplete="off">
+        <div class="searchable-select-dropdown" id="serviceDropdown" style="display: none;">
+            @foreach($servicesAll as $service)
+            <div class="dropdown-item" data-value="{{$service->id}}" data-search="{{strtolower($service->nom_services)}}">
+                {{$service->nom_services}}
             </div>
+            @endforeach
         </div>
+        <input type="hidden" name="service_id" id="selectedServiceId">
+    </div>
+</div>
 
         <div class="row g-3 mb-3">
             <div class="col-md-6">
@@ -919,7 +958,7 @@ body.sidebar-collapsed {
 
 </form>
 </div>
-</div>
+</div> 
 </div>
 
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
@@ -1233,7 +1272,59 @@ function confirmDelete(id, name) {
 
 
 
-// 
+document.addEventListener('DOMContentLoaded', function() {
+    const searchInput = document.getElementById('serviceSearchInput');
+    const dropdown = document.getElementById('serviceDropdown');
+    const hiddenInput = document.getElementById('selectedServiceId');
+    const dropdownItems = dropdown.querySelectorAll('.dropdown-item');
+
+    // Afficher/masquer le dropdown
+    searchInput.addEventListener('focus', () => {
+        dropdown.style.display = 'block';
+        filterItems(searchInput.value);
+    });
+
+    searchInput.addEventListener('input', function() {
+        filterItems(this.value);
+    });
+
+    // Cacher le dropdown en cliquant ailleurs
+    document.addEventListener('click', (e) => {
+        if (!searchInput.contains(e.target) && !dropdown.contains(e.target)) {
+            dropdown.style.display = 'none';
+        }
+    });
+
+    // Sélection d'un item
+    dropdownItems.forEach(item => {
+        item.addEventListener('click', function() {
+            const value = this.getAttribute('data-value');
+            const text = this.textContent.trim();
+            
+            searchInput.value = text;
+            hiddenInput.value = value;
+            dropdown.style.display = 'none';
+            
+            // Retirer la classe selected de tous les items
+            dropdownItems.forEach(i => i.classList.remove('selected'));
+            this.classList.add('selected');
+        });
+    });
+
+    // Fonction de filtrage
+    function filterItems(searchTerm) {
+        const term = searchTerm.toLowerCase().trim();
+        
+        dropdownItems.forEach(item => {
+            const searchText = item.getAttribute('data-search') || item.textContent.toLowerCase();
+            if (term === '' || searchText.includes(term)) {
+                item.style.display = 'block';
+            } else {
+                item.style.display = 'none';
+            }
+        });
+    }
+});
 
 
 

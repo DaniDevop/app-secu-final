@@ -118,13 +118,11 @@
                         <input type="hidden" name="id" value="{{$ecole->id}}">
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn-cancel" data-bs-dismiss="modal">
-                            <i class="fas fa-times me-1"></i> Annuler
-                        </button>
-                        <button type="submit" class="btn-submit">
-                            <i class="fas fa-save me-1"></i> Enregistrer
-                        </button>
-                    </div>
+<button type="button" class="btn btn-cancel" data-bs-dismiss="modal">Annuler</button>
+<button type="submit" class="btn btn-submit">
+<i class="fas fa-save me-1"></i>Enregistrer
+</button>
+</div>
                 </form>
             </div>
         </div>

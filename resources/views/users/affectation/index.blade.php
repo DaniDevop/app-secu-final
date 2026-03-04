@@ -778,6 +778,76 @@ tr:hover .avatar-circle {
         font-size: 14px;
     }
 }
+
+.searchable-select-container {
+    position: relative;
+    width: 100%;
+}
+
+.searchable-select-dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    max-height: 250px;
+    overflow-y: auto;
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    z-index: 1000;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    margin-top: 4px;
+}
+
+.searchable-select-dropdown .dropdown-item {
+    padding: 10px 15px;
+    cursor: pointer;
+    border-bottom: 1px solid #f0f0f0;
+    transition: all 0.2s;
+    font-size: 14px;
+}
+
+.searchable-select-dropdown .dropdown-item:last-child {
+    border-bottom: none;
+}
+
+.searchable-select-dropdown .dropdown-item:hover {
+    background-color: #f0f7ff;
+}
+
+.searchable-select-dropdown .dropdown-item.selected {
+    background-color: #e3f2fd;
+    border-left: 3px solid #0d6efd;
+}
+
+/* Style pour l'input quand il a une valeur sélectionnée */
+.searchable-select-container input[type="text"].has-value {
+    background-color: #f8f9fa;
+    border-color: #86b7fe;
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+}
+
+/* Indicateur de déroulement */
+.searchable-select-container::after {
+    content: '\f078';
+    font-family: 'Font Awesome 6 Free';
+    font-weight: 900;
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #6c757d;
+    pointer-events: none;
+    font-size: 12px;
+}
+
+/* Message quand aucun résultat */
+.searchable-select-dropdown .no-results {
+    padding: 15px;
+    text-align: center;
+    color: #6c757d;
+    font-style: italic;
+}
 </style>
 </head>
 <body>
@@ -943,28 +1013,59 @@ tr:hover .avatar-circle {
                             </label>
                             <input type="date" name="date_fin" class="form-control" required>
                         </div>
-                        <div class="col-12">
-                            <label class="form-label fw-bold">
-                                <i class="fas fa-user me-1 text-primary"></i> Choisir l'Agent
-                            </label>
-                            <select name="agent_stagiare_id" class="form-select" required>
-                                <option value="">Sélectionner un agent...</option>
-                                @foreach($agentAll as $agent)
-                                <option value="{{ $agent->id }}">{{ $agent->name }} {{ $agent->prenom }} ({{ $agent->matricule }})</option>
-                                @endforeach
-                            </select>
-                        </div>
-                        <div class="col-12">
-                            <label class="form-label fw-bold">
-                                <i class="fas fa-university me-1 text-primary"></i> École de Stage
-                            </label>
-                            <select name="ecole_stage_id" class="form-select" required>
-                                <option value="">Sélectionner l'établissement...</option>
-                                @foreach($ecoleStageAll as $ecole)
-                                <option value="{{ $ecole->id }}">{{ $ecole->nom_ecole }}</option>
-                                @endforeach
-                            </select>
-                        </div>
+                      <div class="row g-3">
+    <!-- Select Agent avec recherche -->
+    <div class="col-12">
+        <label class="form-label fw-bold">
+            <i class="fas fa-user me-1 text-primary"></i> Choisir l'Agent
+        </label>
+        <div class="searchable-select-container">
+            <input type="text" 
+                   class="form-control" 
+                   id="agentSearchInput" 
+                   placeholder="Rechercher un agent par nom, prénom ou matricule..."
+                   autocomplete="off">
+            <div class="searchable-select-dropdown" id="agentDropdown" style="display: none;">
+                @foreach($agentAll as $agent)
+                <div class="dropdown-item" 
+                     data-value="{{ $agent->id }}" 
+                     data-search="{{ strtolower($agent->name . ' ' . $agent->prenom . ' ' . $agent->matricule) }}">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span><strong>{{ $agent->name }} {{ $agent->prenom }}</strong></span>
+                        <small class="text-muted">{{ $agent->matricule }}</small>
+                    </div>
+                </div>
+                @endforeach
+            </div>
+            <input type="hidden" name="agent_stagiare_id" id="selectedAgentId">
+        </div>
+    </div>
+
+    <!-- Select École avec recherche -->
+    <div class="col-12">
+        <label class="form-label fw-bold">
+            <i class="fas fa-university me-1 text-primary"></i> École de Stage
+        </label>
+        <div class="searchable-select-container">
+            <input type="text" 
+                   class="form-control" 
+                   id="ecoleSearchInput" 
+                   placeholder="Rechercher un établissement..."
+                   autocomplete="off">
+            <div class="searchable-select-dropdown" id="ecoleDropdown" style="display: none;">
+                @foreach($ecoleStageAll as $ecole)
+                <div class="dropdown-item" 
+                     data-value="{{ $ecole->id }}" 
+                     data-search="{{ strtolower($ecole->nom_ecole) }}">
+                    {{ $ecole->nom_ecole }}
+                </div>
+                @endforeach
+            </div>
+            <input type="hidden" name="ecole_stage_id" id="selectedEcoleId">
+        </div>
+    </div>
+</div>
+
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -1331,6 +1432,166 @@ function changeStatus(id, newStatus) {
         }
     });
 }
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Configuration pour le select des agents
+    initializeSearchableSelect('agent');
+    
+    // Configuration pour le select des écoles
+    initializeSearchableSelect('ecole');
+    
+    function initializeSearchableSelect(prefix) {
+        const searchInput = document.getElementById(prefix + 'SearchInput');
+        const dropdown = document.getElementById(prefix + 'Dropdown');
+        const hiddenInput = document.getElementById('selected' + prefix.charAt(0).toUpperCase() + prefix.slice(1) + 'Id');
+        const dropdownItems = dropdown.querySelectorAll('.dropdown-item');
+        
+        // État de sélection
+        let selectedValue = '';
+        let selectedText = '';
+        
+        // Afficher le dropdown au focus
+        searchInput.addEventListener('focus', function() {
+            dropdown.style.display = 'block';
+            filterItems(this.value);
+        });
+        
+        // Recherche en temps réel
+        searchInput.addEventListener('input', function() {
+            filterItems(this.value);
+            // Si l'utilisateur modifie la recherche, on efface la sélection cachée
+            if (this.value !== selectedText) {
+                hiddenInput.value = '';
+                this.classList.remove('has-value');
+            }
+        });
+        
+        // Gestion des touches clavier
+        searchInput.addEventListener('keydown', function(e) {
+            const visibleItems = Array.from(dropdownItems).filter(item => item.style.display !== 'none');
+            
+            if (e.key === 'ArrowDown') {
+                e.preventDefault();
+                const currentIndex = visibleItems.findIndex(item => item.classList.contains('selected'));
+                const nextIndex = currentIndex + 1;
+                if (nextIndex < visibleItems.length) {
+                    removeSelectedClass();
+                    visibleItems[nextIndex].classList.add('selected');
+                    scrollToItem(visibleItems[nextIndex]);
+                }
+            } else if (e.key === 'ArrowUp') {
+                e.preventDefault();
+                const currentIndex = visibleItems.findIndex(item => item.classList.contains('selected'));
+                const prevIndex = currentIndex - 1;
+                if (prevIndex >= 0) {
+                    removeSelectedClass();
+                    visibleItems[prevIndex].classList.add('selected');
+                    scrollToItem(visibleItems[prevIndex]);
+                }
+            } else if (e.key === 'Enter') {
+                e.preventDefault();
+                const selectedItem = Array.from(dropdownItems).find(item => item.classList.contains('selected'));
+                if (selectedItem && selectedItem.style.display !== 'none') {
+                    selectItem(selectedItem);
+                }
+            } else if (e.key === 'Escape') {
+                dropdown.style.display = 'none';
+            }
+        });
+        
+        // Cacher le dropdown en cliquant ailleurs
+        document.addEventListener('click', function(e) {
+            if (!searchInput.contains(e.target) && !dropdown.contains(e.target)) {
+                dropdown.style.display = 'none';
+            }
+        });
+        
+        // Sélection d'un item
+        dropdownItems.forEach(item => {
+            item.addEventListener('click', function() {
+                selectItem(this);
+            });
+            
+            // Survol
+            item.addEventListener('mouseenter', function() {
+                removeSelectedClass();
+                this.classList.add('selected');
+            });
+        });
+        
+        // Fonction de sélection
+        function selectItem(item) {
+            const value = item.getAttribute('data-value');
+            const text = item.textContent.trim();
+            
+            searchInput.value = text;
+            hiddenInput.value = value;
+            selectedValue = value;
+            selectedText = text;
+            dropdown.style.display = 'none';
+            searchInput.classList.add('has-value');
+            
+            // Retirer la classe selected de tous les items et ajouter sur le sélectionné
+            removeSelectedClass();
+            item.classList.add('selected');
+        }
+        
+        // Fonction de filtrage
+        function filterItems(searchTerm) {
+            const term = searchTerm.toLowerCase().trim();
+            let visibleCount = 0;
+            
+            dropdownItems.forEach(item => {
+                const searchText = item.getAttribute('data-search') || item.textContent.toLowerCase();
+                if (term === '' || searchText.includes(term)) {
+                    item.style.display = 'block';
+                    visibleCount++;
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+            
+            // Afficher un message si aucun résultat
+            let noResultsMsg = dropdown.querySelector('.no-results');
+            if (visibleCount === 0) {
+                if (!noResultsMsg) {
+                    noResultsMsg = document.createElement('div');
+                    noResultsMsg.className = 'no-results';
+                    noResultsMsg.textContent = 'Aucun résultat trouvé';
+                    dropdown.appendChild(noResultsMsg);
+                }
+                noResultsMsg.style.display = 'block';
+            } else if (noResultsMsg) {
+                noResultsMsg.style.display = 'none';
+            }
+        }
+        
+        // Fonction pour retirer la classe selected
+        function removeSelectedClass() {
+            dropdownItems.forEach(item => item.classList.remove('selected'));
+        }
+        
+        // Fonction pour scroller vers un item
+        function scrollToItem(item) {
+            item.scrollIntoView({
+                block: 'nearest',
+                behavior: 'smooth'
+            });
+        }
+        
+        // Fermer le dropdown si on clique en dehors
+        document.addEventListener('click', function(e) {
+            if (!searchInput.contains(e.target) && !dropdown.contains(e.target)) {
+                dropdown.style.display = 'none';
+            }
+        });
+        
+        // Empêcher la fermeture du dropdown quand on clique dedans
+        dropdown.addEventListener('click', function(e) {
+            e.stopPropagation();
+        });
+    }
+});
 </script>
 
 </body>

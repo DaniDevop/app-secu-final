@@ -25,6 +25,7 @@ body{
     min-height:100vh;
     background:linear-gradient(135deg,#f1f3f5,#dee2e6);
     overflow-x: hidden;
+    
 }
 
 /* ===== SIDEBAR ===== */

@@ -37,6 +37,7 @@ body {
     transition: padding-left 0.3s ease;
     min-height: 100vh;
     overflow-x: hidden;
+    
 }
 
 /* ================== SIDEBAR ================== */
@@ -161,23 +162,26 @@ body {
 /* ================== BUTTONS ================== */
 .action-container {
     margin-bottom: 20px;
+    display: flex;
+    justify-content: flex-end;
 }
 
 .btn-pdf {
     background: #dc3545;
     color: white;
     border-radius: 30px;
-    padding: 12px 20px;
-    font-weight: 600;
+    padding: 8px 16px;
+    font-weight: 500;
     border: none;
     display: inline-flex;
     align-items: center;
     justify-content: center;
     gap: 8px;
-    width: 100%;
-    font-size: 15px;
+    font-size: 14px;
     cursor: pointer;
     transition: all 0.3s;
+    width: auto;
+    min-width: 140px;
 }
 .btn-pdf:hover {
     background: #c82333;
@@ -356,6 +360,72 @@ body {
     font-size: 13px;
 }
 
+/* ================== PAGINATION ================== */
+.pagination-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 20px;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.pagination-info {
+    color: #666;
+    font-size: 14px;
+}
+
+.pagination-controls {
+    display: flex;
+    gap: 5px;
+    align-items: center;
+}
+
+.pagination-btn {
+    background: white;
+    border: 1px solid #dee2e6;
+    color: var(--primary);
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s;
+    font-weight: 500;
+}
+.pagination-btn:hover:not(:disabled) {
+    background: var(--primary);
+    color: white;
+    border-color: var(--primary);
+}
+.pagination-btn.active {
+    background: var(--primary);
+    color: white;
+    border-color: var(--primary);
+}
+.pagination-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.pagination-size {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-left: 15px;
+}
+
+.pagination-select {
+    padding: 8px;
+    border-radius: 8px;
+    border: 1px solid #dee2e6;
+    color: var(--primary);
+    font-weight: 500;
+    cursor: pointer;
+}
+
 /* ================== AVATAR ================== */
 .avatar-circle {
     width: 35px; 
@@ -466,15 +536,13 @@ tr:hover .initials { color: white; }
     .table-container { display: none; }
     .history-cards { display: flex; }
     
-    .btn-pdf { width: 100%; }
-    
     .action-container {
-        display: flex;
-        gap: 10px;
+        justify-content: center;
     }
     
-    .action-container .btn-pdf {
-        flex: 1;
+    .btn-pdf { 
+        width: 100%;
+        max-width: 300px;
     }
 }
 
@@ -489,6 +557,15 @@ tr:hover .initials { color: white; }
     .card-agent-info h4 { font-size: 15px; }
     .card-info-item { flex: 1 1 100%; }
     .card-footer .btn-icon { width: 40px; height: 40px; }
+    
+    .pagination-container {
+        flex-direction: column;
+        gap: 15px;
+    }
+    
+    .pagination-size {
+        margin-left: 0;
+    }
 }
 
 /* Très grands écrans */
@@ -561,7 +638,7 @@ tr:hover .initials { color: white; }
 
     <div class="action-container">
         <button class="btn-pdf" onclick="generateHistoriquePDF()">
-            <i class="fas fa-file-pdf me-2"></i>Exporter en PDF
+            <i class="fas fa-file-pdf me-2"></i>Exporter PDF
         </button>
     </div>
 
@@ -673,94 +750,41 @@ tr:hover .initials { color: white; }
                     <th>Date de fin</th>
                     <th>Moyenne</th>
                     <th>Mention</th>
-                    <th>Actions</th>
                 </tr>
             </thead>
-            <tbody>
-                @forelse($historiques as $hist)
-                <tr>
-                    <td>{{ $hist->agent_matricule ?? 'N/A' }}</td>
-                    <td>
-                        <div class="d-flex align-items-center gap-2">
-                            <div class="avatar-circle">
-                                {{ substr($hist->agent_prenom ?? '', 0, 1) }}{{ substr($hist->agent_nom ?? '', 0, 1) }}
-                            </div>
-                            <div>
-                                <strong>{{ $hist->agent_nom ?? '' }} {{ $hist->agent_prenom ?? '' }}</strong>
-                                @if(isset($hist->agent_grade))
-                                <br><small>{{ $hist->agent_grade }}</small>
-                                @endif
-                            </div>
-                        </div>
-                    </td>
-                    <td>{{ $hist->ecole_nom ?? 'Non assigné' }}</td>
-                    <td>
-                        @if($hist->date_de_fin)
-                        <span class="badge bg-info bg-opacity-10">
-                            {{ \Carbon\Carbon::parse($hist->date_de_fin)->format('d/m/Y') }}
-                        </span>
-                        @else
-                        <span class="badge bg-warning">En cours</span>
-                        @endif
-                    </td>
-                    <td>
-                        @if(isset($hist->moyenne) && $hist->moyenne)
-                        @php
-                            $moyenneClass = $hist->moyenne >= 16 ? 'success' : ($hist->moyenne >= 12 ? 'info' : ($hist->moyenne >= 10 ? 'warning' : 'danger'));
-                        @endphp
-                        <span class="badge bg-{{ $moyenneClass }}">
-                            {{ number_format($hist->moyenne, 2) }}/20
-                        </span>
-                        @else
-                        -
-                        @endif
-                    </td>
-                    <td>
-                        @if($hist->mention)
-                        @php
-                            $mentionClass = match(true) {
-                                str_contains(strtolower($hist->mention), 'très') => 'success',
-                                str_contains(strtolower($hist->mention), 'bien') => 'primary',
-                                str_contains(strtolower($hist->mention), 'assez') => 'info',
-                                str_contains(strtolower($hist->mention), 'passable') => 'warning',
-                                str_contains(strtolower($hist->mention), 'insuffisant') => 'danger',
-                                default => 'secondary'
-                            };
-                        @endphp
-                        <span class="badge bg-{{ $mentionClass }}">
-                            <i class="fas fa-award me-1"></i>{{ $hist->mention }}
-                        </span>
-                        @else
-                        -
-                        @endif
-                    </td>
-                    <td>
-                        <div class="btn-group btn-group-sm">
-                            <button class="btn btn-outline-primary" title="Voir" onclick="viewDetails({{ $hist->id ?? 0 }})">
-                                <i class="fas fa-eye"></i>
-                            </button>
-                            <button class="btn btn-outline-warning" title="Modifier" onclick="editHistorique({{ $hist->id ?? 0 }})">
-                                <i class="fas fa-edit"></i>
-                            </button>
-                            <button class="btn btn-outline-danger" title="PDF" onclick="generateSinglePDF({{ $hist->id ?? 0 }})">
-                                <i class="fas fa-file-pdf"></i>
-                            </button>
-                        </div>
-                    </td>
-                </tr>
-                @empty
-                <tr>
-                    <td colspan="7" class="text-center py-5">
-                        <div class="empty-state">
-                            <i class="fas fa-history fa-3x text-muted mb-3"></i>
-                            <h5>Aucun historique disponible</h5>
-                            <p class="text-muted">Les stages terminés apparaîtront ici</p>
-                        </div>
-                    </td>
-                </tr>
-                @endforelse
+            <tbody id="tableBody">
+                <!-- Les données seront injectées par JavaScript -->
             </tbody>
         </table>
+        
+        <!-- Pagination -->
+        <div class="pagination-container">
+            <div class="pagination-info" id="paginationInfo">
+                Affichage de 1 à 10 sur 0 entrées
+            </div>
+            <div class="pagination-controls" id="paginationControls">
+                <button class="pagination-btn" id="prevPage" disabled>
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+                <div id="pageNumbers" style="display: flex; gap: 5px;">
+                    <!-- Les numéros de page seront injectés ici -->
+                </div>
+                <button class="pagination-btn" id="nextPage" disabled>
+                    <i class="fas fa-chevron-right"></i>
+                </button>
+            </div>
+            <div class="pagination-size">
+                <span>Afficher</span>
+                <select class="pagination-select" id="pageSize">
+                    <option value="5">5</option>
+                    <option value="10" selected>10</option>
+                    <option value="25">25</option>
+                    <option value="50">50</option>
+                    <option value="100">100</option>
+                </select>
+                <span>entrées</span>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -788,18 +812,72 @@ $(document).ready(function() {
         }
     });
 
-    // Recherche en temps réel pour les cartes (mobile)
+    // Données originales depuis PHP
+    window.historiqueData = [
+        @forelse($historiques as $hist)
+        {
+            id: {{ $hist->id ?? 0 }},
+            matricule: "{{ $hist->agent_matricule ?? 'N/A' }}",
+            nom: "{{ $hist->agent_nom ?? '' }}",
+            prenom: "{{ $hist->agent_prenom ?? '' }}",
+            ecole: "{{ $hist->ecole_nom ?? 'Non assigné' }}",
+            date_fin_raw: "{{ $hist->date_fin ?? '' }}",
+            moyenne: "{{ isset($hist->moyenne) && $hist->moyenne ? number_format($hist->moyenne, 2) . '/20' : '-' }}",
+            moyenne_raw: {{ $hist->moyenne ?? 0 }},
+            mention: "{{ $hist->mention ?? '-' }}",
+            grade: "{{ $hist->agent_grade ?? '' }}",
+            searchText: "{{ strtolower($hist->agent_nom ?? '') }} {{ strtolower($hist->agent_prenom ?? '') }} {{ strtolower($hist->ecole_nom ?? '') }} {{ $hist->agent_matricule ?? '' }}"
+        },
+        @empty
+        @endforelse
+    ];
+
+    // État de la pagination
+    window.currentPage = 1;
+    window.pageSize = 10;
+    window.filteredData = [...window.historiqueData];
+
+    // Initialiser l'affichage
+    updateTable();
+
+    // Recherche en temps réel
     $('#searchInput').on('keyup', function() {
         let searchTerm = $(this).val().toLowerCase().trim();
         
-        $('.history-card').each(function() {
-            let cardText = $(this).data('search')?.toLowerCase() || '';
-            if (searchTerm === '' || cardText.includes(searchTerm)) {
-                $(this).show();
-            } else {
-                $(this).hide();
-            }
-        });
+        if (searchTerm === '') {
+            window.filteredData = [...window.historiqueData];
+        } else {
+            window.filteredData = window.historiqueData.filter(item => 
+                item.searchText.includes(searchTerm)
+            );
+        }
+        
+        window.currentPage = 1;
+        updateTable();
+        updateCards(searchTerm);
+    });
+
+    // Pagination - changement de taille
+    $('#pageSize').on('change', function() {
+        window.pageSize = parseInt($(this).val());
+        window.currentPage = 1;
+        updateTable();
+    });
+
+    // Boutons précédent/suivant
+    $('#prevPage').on('click', function() {
+        if (window.currentPage > 1) {
+            window.currentPage--;
+            updateTable();
+        }
+    });
+
+    $('#nextPage').on('click', function() {
+        let totalPages = Math.ceil(window.filteredData.length / window.pageSize);
+        if (window.currentPage < totalPages) {
+            window.currentPage++;
+            updateTable();
+        }
     });
 
     // Ajuster l'affichage au redimensionnement
@@ -809,7 +887,159 @@ $(document).ready(function() {
             $('#menuToggle i').removeClass('fa-times').addClass('fa-bars');
         }
     });
+
+    // Mise à jour des cartes pour mobile
+    function updateCards(searchTerm) {
+        $('.history-card').each(function() {
+            let cardText = $(this).data('search')?.toLowerCase() || '';
+            if (searchTerm === '' || cardText.includes(searchTerm)) {
+                $(this).show();
+            } else {
+                $(this).hide();
+            }
+        });
+    }
 });
+
+function updateTable() {
+    let start = (window.currentPage - 1) * window.pageSize;
+    let end = start + window.pageSize;
+    let paginatedData = window.filteredData.slice(start, end);
+    
+    let tbody = $('#tableBody');
+    tbody.empty();
+    
+    if (paginatedData.length === 0) {
+        tbody.html(`
+            <tr>
+                <td colspan="6" class="text-center py-5">
+                    <div class="empty-state">
+                        <i class="fas fa-history fa-3x text-muted mb-3"></i>
+                        <h5>Aucun historique disponible</h5>
+                        <p class="text-muted">Les stages terminés apparaîtront ici</p>
+                    </div>
+                </td>
+            </tr>
+        `);
+    } else {
+        paginatedData.forEach(item => {
+            // Déterminer la classe de la moyenne
+            let moyenneClass = '';
+            if (item.moyenne_raw >= 16) moyenneClass = 'success';
+            else if (item.moyenne_raw >= 12) moyenneClass = 'info';
+            else if (item.moyenne_raw >= 10) moyenneClass = 'warning';
+            else if (item.moyenne_raw > 0) moyenneClass = 'danger';
+            
+            // Déterminer la classe de la mention
+            let mentionClass = 'secondary';
+            if (item.mention.toLowerCase().includes('très')) mentionClass = 'success';
+            else if (item.mention.toLowerCase().includes('bien')) mentionClass = 'primary';
+            else if (item.mention.toLowerCase().includes('assez')) mentionClass = 'info';
+            else if (item.mention.toLowerCase().includes('passable')) mentionClass = 'warning';
+            else if (item.mention.toLowerCase().includes('insuffisant')) mentionClass = 'danger';
+            
+            let row = `
+                <tr>
+                    <td>${item.matricule}</td>
+                    <td>
+                        <div class="d-flex align-items-center gap-2">
+                            <div class="avatar-circle">
+                                ${item.prenom.charAt(0)}${item.nom.charAt(0)}
+                            </div>
+                            <div>
+                                <strong>${item.nom} ${item.prenom}</strong>
+                                ${item.grade ? `<br><small>${item.grade}</small>` : ''}
+                            </div>
+                        </div>
+                    </td>
+                    <td>${item.ecole}</td>
+                    <td>
+                        ${item.date_fin !== 'En cours' ? 
+                            `<span class="badge bg-primary bg-opacity-10 text-primary">${item.date_fin}</span>` : 
+                            `<span class="badge bg-warning">En cours</span>`
+                        }
+                    </td>
+                    <td>
+                        ${item.moyenne !== '-' ? 
+                            `<span class="badge bg-${moyenneClass}">${item.moyenne}</span>` : 
+                            '-'
+                        }
+                    </td>
+                    <td>
+                        ${item.mention !== '-' ? 
+                            `<span class="badge bg-${mentionClass}"><i class="fas fa-award me-1"></i>${item.mention}</span>` : 
+                            '-'
+                        }
+                    </td>
+                </tr>
+            `;
+            tbody.append(row);
+        });
+    }
+    
+    // Mettre à jour les contrôles de pagination
+    updatePaginationControls();
+}
+
+function updatePaginationControls() {
+    let totalItems = window.filteredData.length;
+    let totalPages = Math.ceil(totalItems / window.pageSize);
+    let start = (window.currentPage - 1) * window.pageSize + 1;
+    let end = Math.min(window.currentPage * window.pageSize, totalItems);
+    
+    if (totalItems === 0) {
+        start = 0;
+        end = 0;
+    }
+    
+    // Mettre à jour les informations
+    $('#paginationInfo').text(`Affichage de ${start} à ${end} sur ${totalItems} entrées`);
+    
+    // Générer les numéros de page
+    let pageNumbers = $('#pageNumbers');
+    pageNumbers.empty();
+    
+    // Afficher un nombre limité de pages
+    let maxVisiblePages = 5;
+    let startPage = Math.max(1, window.currentPage - Math.floor(maxVisiblePages / 2));
+    let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
+    
+    if (endPage - startPage + 1 < maxVisiblePages) {
+        startPage = Math.max(1, endPage - maxVisiblePages + 1);
+    }
+    
+    if (startPage > 1) {
+        pageNumbers.append(`<button class="pagination-btn" onclick="goToPage(1)">1</button>`);
+        if (startPage > 2) {
+            pageNumbers.append(`<span class="pagination-btn" style="background: none; border: none;">...</span>`);
+        }
+    }
+    
+    for (let i = startPage; i <= endPage; i++) {
+        pageNumbers.append(`
+            <button class="pagination-btn ${i === window.currentPage ? 'active' : ''}" 
+                    onclick="goToPage(${i})">${i}</button>
+        `);
+    }
+    
+    if (endPage < totalPages) {
+        if (endPage < totalPages - 1) {
+            pageNumbers.append(`<span class="pagination-btn" style="background: none; border: none;">...</span>`);
+        }
+        pageNumbers.append(`
+            <button class="pagination-btn" onclick="goToPage(${totalPages})">${totalPages}</button>
+        `);
+    }
+    
+    // Activer/désactiver les boutons précédent/suivant
+    $('#prevPage').prop('disabled', window.currentPage === 1);
+    $('#nextPage').prop('disabled', window.currentPage === totalPages || totalItems === 0);
+}
+
+function goToPage(page) {
+    window.currentPage = page;
+    updateTable();
+}
 
 // Fonction de génération PDF
 function generateHistoriquePDF() {
@@ -837,29 +1067,18 @@ function generateHistoriquePDF() {
         const today = new Date();
         doc.text(`Édité le ${today.toLocaleDateString('fr-FR')}`, margin, 38);
 
-        // Récupération des données
+        // Récupération des données filtrées pour le PDF
         let data = [];
-        $('.history-card').each(function() {
-            let row = [];
-            let card = $(this);
-            
-            let matricule = card.find('.matricule').text().trim().replace('N/A', '');
-            let agent = card.find('.card-agent-info h4').text().trim();
-            let ecole = card.find('.card-info-item:contains("Établissement") .value').text().trim().replace('', '').trim();
-            let date = card.find('.card-info-item:contains("Date") .value').text().trim().replace('', '').trim();
-            let moyenne = card.find('.card-info-item:contains("Moyenne") .value').text().trim().replace('', '').trim();
-            let mention = card.find('.card-badge').text().trim();
-            
-            row.push(matricule || 'N/A');
-            row.push(agent || 'N/A');
-            row.push(ecole || 'N/A');
-            row.push(date || 'N/A');
-            row.push(moyenne || '-');
-            row.push(mention || '-');
-            
-            if (row.some(cell => cell !== 'N/A' && cell !== '-')) {
-                data.push(row);
-            }
+        window.filteredData.forEach(item => {
+            let row = [
+                item.matricule,
+                `${item.nom} ${item.prenom}`,
+                item.ecole,
+                item.date_fin,
+                item.moyenne,
+                item.mention
+            ];
+            data.push(row);
         });
 
         if (!data.length) {
