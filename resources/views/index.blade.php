@@ -669,7 +669,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 return;
             }
             
-            if (passwordValue.length < 6) {
+            if (passwordValue.length < 3) {
                 e.preventDefault();
                 showError('Le mot de passe doit contenir au moins 6 caractères');
                 return;
